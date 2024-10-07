@@ -31,8 +31,8 @@
 #define TOPIC_BRIGHT_STATE   "/mqtt/light/bright/state/" DEV_NAME
 #define TOPIC_BRIGHT_COMMAND "/mqtt/light/bright/command/" DEV_NAME
 
-#define TOPIC_DEV_IP         "/mqtt/light/ip/" DEV_NAME
-#define TOPIC_DEV_UPDATE     "/mqtt/light/update/" DEV_NAME
+#define TOPIC_DEV_IP         "/mqtt/dev/ip/" DEV_NAME
+#define TOPIC_DEV_UPDATE     "/mqtt/dev/update/" DEV_NAME
 
 #define CLIENT_CONNECT_MAX_RETRY_TIMES 3
 

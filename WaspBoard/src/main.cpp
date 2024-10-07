@@ -96,12 +96,13 @@ void connect(uint8_t retry_times) {
   client.subscribe(TOPIC_COMMAND);
   client.subscribe(TOPIC_RGB_COMMAND);
   client.subscribe(TOPIC_BRIGHT_COMMAND);
+  client.subscribe(TOPIC_DEV_UPDATE);
 
-  state = STATE_DEFAULT;
+  // state = STATE_DEFAULT;
   state_changed = true;
 
-  client.publish(TOPIC_DEV_IP, WiFi.localIP().toString(), true, 0);
-  client.publish(TOPIC_AVAILABLE, AVAILABLE, true, 0);
+  client.publish(TOPIC_DEV_IP, WiFi.localIP().toString(), true, 1);
+  client.publish(TOPIC_AVAILABLE, AVAILABLE, true, 1);
 }
 
 void messageReceived(String &topic, String &payload) {
@@ -134,13 +135,13 @@ void setup() {
   digitalWrite(LED_G, GPIO_DEFAULT);
   digitalWrite(LED_B, GPIO_DEFAULT);
 
-   Serial.begin(115200);
+  Serial.begin(115200);
   WiFi.begin(WIFI_SSID, WIFI_PASS);
 
   // Note: Local domain names (e.g. "Computer.local" on OSX) are not supported
   // by Arduino. You need to set the IP address directly.
   client.begin(MQTT_HOST, MQTT_PORT, net);
-  client.setWill(TOPIC_AVAILABLE, UNAVAILABLE, true, 0);
+  client.setWill(TOPIC_AVAILABLE, UNAVAILABLE, true, 1);
   client.onMessage(messageReceived);
 
   delay(5000);
@@ -195,9 +196,9 @@ void loop() {
     }
 
     if (client.connected()) {
-      client.publish(TOPIC_STATE, state, true, 0);
-      client.publish(TOPIC_RGB_STATE, rgb, true, 0);
-      client.publish(TOPIC_BRIGHT_STATE, brightness, true, 0);
+      client.publish(TOPIC_STATE, state, true, 1);
+      client.publish(TOPIC_RGB_STATE, rgb, true, 1);
+      client.publish(TOPIC_BRIGHT_STATE, brightness, true, 1);
     }
 
     state_changed = false;
