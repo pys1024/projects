@@ -103,6 +103,7 @@ void connect(uint8_t retry_times) {
 
   client.publish(TOPIC_DEV_IP, WiFi.localIP().toString(), true, 1);
   client.publish(TOPIC_AVAILABLE, AVAILABLE, true, 1);
+  client.publish(TOPIC_LIGHT_DISC, PAYLOAD_LIGHT_DISC, true, 1);
 }
 
 void messageReceived(String &topic, String &payload) {
@@ -136,6 +137,7 @@ void setup() {
   digitalWrite(LED_B, GPIO_DEFAULT);
 
   Serial.begin(115200);
+  Serial.println("\nDevice(" DEV_NAME ") is starting...");
   WiFi.begin(WIFI_SSID, WIFI_PASS);
 
   // Note: Local domain names (e.g. "Computer.local" on OSX) are not supported
@@ -196,9 +198,12 @@ void loop() {
     }
 
     if (client.connected()) {
-      client.publish(TOPIC_STATE, state, true, 1);
-      client.publish(TOPIC_RGB_STATE, rgb, true, 1);
-      client.publish(TOPIC_BRIGHT_STATE, brightness, true, 1);
+      Serial.println("\nPublishing state: " + state + ", rgb: " + rgb + ", brightness: " + brightness);
+      // Note: the following publish MUST use QoS 0, otherwise the client may be disconnected.
+      client.publish(TOPIC_STATE, state, true, 0);
+      client.publish(TOPIC_RGB_STATE, rgb, true, 0);
+      client.publish(TOPIC_BRIGHT_STATE, brightness, true, 0);
+      Serial.println("\nPublishing finished!");
     }
 
     state_changed = false;

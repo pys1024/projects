@@ -25,14 +25,17 @@
 #define MSG_ON               "\xbb\x01\xff"
 #define MSG_OFF              "\xbb\x02\xff"
 
-#define STATE_DEFAULT        GPIO_DEFAULT == GPIO_ON ? STATE_ON : STATE_OFF
+#define STATE_DEFAULT        (GPIO_DEFAULT == GPIO_ON ? STATE_ON : STATE_OFF)
 
 #define DEV_NAME             "bedside_lamp"
+
 #define TOPIC_STATE          "/mqtt/light/state/" DEV_NAME
 #define TOPIC_COMMAND        "/mqtt/light/command/" DEV_NAME
 #define TOPIC_AVAILABLE      "/mqtt/light/available/" DEV_NAME
+
 #define TOPIC_RGB_STATE      "/mqtt/light/rgb/state/" DEV_NAME
 #define TOPIC_RGB_COMMAND    "/mqtt/light/rgb/command/" DEV_NAME
+
 #define TOPIC_BRIGHT_STATE   "/mqtt/light/bright/state/" DEV_NAME
 #define TOPIC_BRIGHT_COMMAND "/mqtt/light/bright/command/" DEV_NAME
 

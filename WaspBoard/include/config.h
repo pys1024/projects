@@ -20,19 +20,36 @@
 #define MSG_ON               "\xbb\x01\xff"
 #define MSG_OFF              "\xbb\x02\xff"
 
-#define STATE_DEFAULT        GPIO_DEFAULT == GPIO_ON ? STATE_ON : STATE_OFF
+#define STATE_DEFAULT        (GPIO_DEFAULT == GPIO_ON ? STATE_ON : STATE_OFF)
 
 #define DEV_NAME             "waspboard"
+
 #define TOPIC_STATE          "/mqtt/light/state/" DEV_NAME
 #define TOPIC_COMMAND        "/mqtt/light/command/" DEV_NAME
-#define TOPIC_AVAILABLE      "/mqtt/light/available/" DEV_NAME
+
 #define TOPIC_RGB_STATE      "/mqtt/light/rgb/state/" DEV_NAME
 #define TOPIC_RGB_COMMAND    "/mqtt/light/rgb/command/" DEV_NAME
+
 #define TOPIC_BRIGHT_STATE   "/mqtt/light/bright/state/" DEV_NAME
 #define TOPIC_BRIGHT_COMMAND "/mqtt/light/bright/command/" DEV_NAME
 
 #define TOPIC_DEV_IP         "/mqtt/dev/ip/" DEV_NAME
 #define TOPIC_DEV_UPDATE     "/mqtt/dev/update/" DEV_NAME
+#define TOPIC_AVAILABLE      "/mqtt/light/available/" DEV_NAME
+
+#define TOPIC_LIGHT_DISC     "homeassistant/light/" DEV_NAME "/config"
+#define PAYLOAD_LIGHT_DISC   "{\
+\"name\": \"Wasp Light\",\
+\"unique_id\": \"" DEV_NAME "12138\",\
+\"state_topic\": \"" TOPIC_STATE "\",\
+\"command_topic\": \"" TOPIC_COMMAND "\",\
+\"rgb_state_topic\": \"" TOPIC_RGB_STATE "\",\
+\"rgb_command_topic\": \"" TOPIC_RGB_COMMAND "\",\
+\"availability_topic\": \"" TOPIC_AVAILABLE "\",\
+\"qos\": 1,\
+\"retain\": true,\
+}"
+
 
 #define CLIENT_CONNECT_MAX_RETRY_TIMES 3
 
@@ -43,7 +60,8 @@
 // the listening port of your MQTT server or MQTT broker
 #define MQTT_PORT            1883
 // the IP address or domain name of your MQTT server or MQTT broker
-#define MQTT_HOST            "192.168.110.57"
+// #define MQTT_HOST            "192.168.110.57" // dev pc ip
+#define MQTT_HOST            "192.168.110.50" // homeassistant
 // the ID of yourself, client would use this ID register itself to MQTT server
 #define MQTT_CLIENT_ID       "ESP Device" DEV_NAME
 // your MQTT login name, if MQTT server allow anonymous login,any string is OK,

@@ -24,7 +24,8 @@ from requests.auth import HTTPDigestAuth
 import time
 Import('env')
 
-MQTT_SERVER = '192.168.110.57'
+# MQTT_SERVER = '192.168.110.57' # dev pc ip
+MQTT_SERVER = '192.168.110.50' # homeassistant ip
 MQTT_PORT = 1883
 MQTT_USER = 'homeassistant'
 MQTT_PASSWD = 'homeassistant'
