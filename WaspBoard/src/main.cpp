@@ -12,12 +12,14 @@
 
 #include <ESPAsyncWebServer.h>
 #include <ElegantOTA.h>
+#include <ArduinoJson.h>
+
 
 WiFiClient net;
 MQTTClient client;
 String state = STATE_DEFAULT;
 String rgb = "255,255,255";
-String brightness = "255";
+int32_t brightness = 255;
 int32_t last_touch_val = 0;
 bool state_changed = false;
 uint32_t connect_cnt = 0;
@@ -94,8 +96,6 @@ void connect(uint8_t retry_times) {
   Serial.println("\nconnected!");
 
   client.subscribe(TOPIC_COMMAND);
-  client.subscribe(TOPIC_RGB_COMMAND);
-  client.subscribe(TOPIC_BRIGHT_COMMAND);
   client.subscribe(TOPIC_DEV_UPDATE);
 
   // state = STATE_DEFAULT;
@@ -116,11 +116,23 @@ void messageReceived(String &topic, String &payload) {
   if (topic == TOPIC_DEV_UPDATE) {
     fw_update = 1;
   } else if (topic == TOPIC_COMMAND) {
-    state = payload;
-  } else if (topic == TOPIC_RGB_COMMAND) {
-    rgb = payload;
-  } else if (topic == TOPIC_BRIGHT_COMMAND) {
-    brightness = payload;
+    JsonDocument doc;
+    // Deserialize the JSON document
+    DeserializationError error = deserializeJson(doc, payload);
+    if (!error) {
+      if (doc[KEY_STATE].is<String>()) {
+        state = doc[KEY_STATE].as<String>();
+      }
+      if (doc[KEY_COLOR].is<JsonObject>()) {
+        rgb = String("") + doc[KEY_COLOR]["r"].as<int>() + "," + doc[KEY_COLOR]["g"].as<int>() + "," + doc[KEY_COLOR]["b"].as<int>();
+      }
+      if (doc[KEY_BRIGHTNESS].is<int>()) {
+        brightness = doc[KEY_BRIGHTNESS].as<int>();
+      }
+      Serial.println("\nReceived state: " + state + ", rgb: " + rgb + ", brightness: " + brightness);
+    } else {
+      Serial.printf("\nFailed to parse JSON: %s\n", error.c_str());
+    }
   }
   state_changed = true;
 }
@@ -177,7 +189,7 @@ void loop() {
     state_changed = true;
     state = state == STATE_ON ? STATE_OFF : STATE_ON;
     if (state == STATE_ON) {
-      brightness = "255";
+      brightness = 255;
     }
   }
   last_touch_val = val;
@@ -199,10 +211,17 @@ void loop() {
 
     if (client.connected()) {
       Serial.println("\nPublishing state: " + state + ", rgb: " + rgb + ", brightness: " + brightness);
+
+      JsonDocument doc;
+      doc[KEY_STATE] = state;
+      JsonObject color = doc[KEY_COLOR].to<JsonObject>();
+      color["r"] = rgb.substring(0, rgb.indexOf(','));
+      color["g"] = rgb.substring(rgb.indexOf(',') + 1, rgb.lastIndexOf(','));
+      color["b"] = rgb.substring(rgb.lastIndexOf(',') + 1);
+      doc[KEY_BRIGHTNESS] = brightness;
+
       // Note: the following publish MUST use QoS 0, otherwise the client may be disconnected.
-      client.publish(TOPIC_STATE, state, true, 0);
-      client.publish(TOPIC_RGB_STATE, rgb, true, 0);
-      client.publish(TOPIC_BRIGHT_STATE, brightness, true, 0);
+      client.publish(TOPIC_STATE, doc.as<String>(), true, 0);
       Serial.println("\nPublishing finished!");
     }
 

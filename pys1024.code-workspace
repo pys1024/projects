@@ -22,7 +22,8 @@
 			"initializer_list": "cpp",
 			"ranges": "cpp",
 			"regex": "cpp",
-			"random": "cpp"
+			"random": "cpp",
+			"numbers": "cpp"
 		}
 	}
 }

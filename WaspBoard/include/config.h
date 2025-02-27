@@ -27,27 +27,46 @@
 #define TOPIC_STATE          "/mqtt/light/state/" DEV_NAME
 #define TOPIC_COMMAND        "/mqtt/light/command/" DEV_NAME
 
-#define TOPIC_RGB_STATE      "/mqtt/light/rgb/state/" DEV_NAME
-#define TOPIC_RGB_COMMAND    "/mqtt/light/rgb/command/" DEV_NAME
-
-#define TOPIC_BRIGHT_STATE   "/mqtt/light/bright/state/" DEV_NAME
-#define TOPIC_BRIGHT_COMMAND "/mqtt/light/bright/command/" DEV_NAME
+#define KEY_STATE             "state"
+#define KEY_COLOR_MODE        "color_mode"
+#define KEY_COLOR             "color"
+#define KEY_BRIGHTNESS        "brightness"
+#define KEY_COLOR_TEMP        "color_temp"
+#define KEY_EFFECT            "effect"
 
 #define TOPIC_DEV_IP         "/mqtt/dev/ip/" DEV_NAME
 #define TOPIC_DEV_UPDATE     "/mqtt/dev/update/" DEV_NAME
 #define TOPIC_AVAILABLE      "/mqtt/light/available/" DEV_NAME
 
-#define TOPIC_LIGHT_DISC     "homeassistant/light/" DEV_NAME "/config"
+#define TOPIC_LIGHT_DISC     "homeassistant/device/" DEV_NAME "/config"
 #define PAYLOAD_LIGHT_DISC   "{\
-\"name\": \"Wasp Light\",\
-\"unique_id\": \"" DEV_NAME "12138\",\
+\"dev\": {\
+    \"ids\": \"102426\",\
+    \"name\": \"Penn\",\
+    \"mf\": \"Penn\",\
+    \"sw\": \"1.0\",\
+    \"sn\": \"1234567890\"\
+},\
+\"o\": {\
+    \"name\": \"Penn\",\
+    \"sw\": \"1.0\",\
+    \"url\": \"https://pys1024.top\"\
+},\
+\"cmps\": {\
+    \"component\": {\
+        \"p\": \"light\",\
+        \"unique_id\": \"" DEV_NAME "12138\",\
+        \"name\": \"Wasp Light\",\
+        \"schema\": \"json\",\
+        \"brightness\": false,\
+        \"supported_color_modes\": [\"rgb\"],\
+        \"retain\": true\
+    }\
+},\
 \"state_topic\": \"" TOPIC_STATE "\",\
 \"command_topic\": \"" TOPIC_COMMAND "\",\
-\"rgb_state_topic\": \"" TOPIC_RGB_STATE "\",\
-\"rgb_command_topic\": \"" TOPIC_RGB_COMMAND "\",\
 \"availability_topic\": \"" TOPIC_AVAILABLE "\",\
-\"qos\": 1,\
-\"retain\": true,\
+\"qos\": 1\
 }"
 
 
