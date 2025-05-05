@@ -1,0 +1,405 @@
+
+连接器　版本8.7.7.190806
+Input Object File: f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\MAIN.OBJ
+Input Object File: f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\CODECONFIG.OBJ
+Input Object File: f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\HT8_IT.OBJ
+Input Object File: f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\HT8_SYS_CLOCK.OBJ
+Input Object File: f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\HT8_GPIO.OBJ
+Input Object File: f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\HT8_CTM.OBJ
+Input Object File: f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\HT8_UART.OBJ
+Input Object File: f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\STARTUP1_L.OBJ
+
+Input Library File: C:\Program Files\Holtek MCU Development Tools\HT-IDE3000V8.x\LIB\LIBHOLTEKGCC.LIB
+Input Library File: C:\Program Files\Holtek MCU Development Tools\HT-IDE3000V8.x\LIB\v3_lmrsc.lib
+
+
+     Bank    Start     End      Length     Class    AvgIns    Name
+     00h     0000h     0000h    0001h      CODE               @code (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\MAIN.OBJ)
+     00h     0004h     0004h    0001h      CODE               @INT0_ISR_code (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\HT8_IT.OBJ)
+     00h     0008h     0008h    0001h      CODE               @COMP_ISR_code (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\HT8_IT.OBJ)
+     00h     000ch     000fh    0004h      CODE               @STM_ISR_code (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\HT8_IT.OBJ)
+     00h     0010h     0013h    0004h      CODE               @PTM_CTM_ISR_code (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\MAIN.OBJ)
+     00h     0014h     0017h    0004h      CODE               @LVD_EEPROM_ISR_code (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\HT8_IT.OBJ)
+     00h     0018h     0018h    0001h      CODE               @ADC_ISR_code (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\HT8_IT.OBJ)
+     00h     001ch     001ch    0001h      CODE               @TB0_ISR_code (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\HT8_IT.OBJ)
+     00h     0020h     0020h    0001h      CODE               @TB1_ISR_code (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\HT8_IT.OBJ)
+     00h     0024h     0024h    0001h      CODE               @INT1_ISR_code (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\HT8_IT.OBJ)
+     00h     0025h     0029h    0005h      CODE               @crom (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\MAIN.OBJ)
+     00h     002ch     002fh    0004h      CODE               @UART_ISR_code (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\HT8_UART.OBJ)
+     00h     0030h     0050h    0021h      CODE               @start (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\MAIN.OBJ)
+     00h     0051h     0060h    0010h      CODE               _delay_ms (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\MAIN.OBJ)
+     00h     0061h     00fah    009ah      CODE               _disptds_l (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\MAIN.OBJ)
+     00h     00fbh     0194h    009ah      CODE               _disptds_r (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\MAIN.OBJ)
+     00h     0195h     01f6h    0062h      CODE               _disptemp_l (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\MAIN.OBJ)
+     00h     01f7h     0258h    0062h      CODE               _disptemp_r (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\MAIN.OBJ)
+     00h     0259h     0288h    0030h      CODE               _SendData (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\MAIN.OBJ)
+     00h     0289h     02feh    0076h      CODE               _Rx_Data_Handle (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\MAIN.OBJ)
+     00h     02ffh     03aeh    00b0h      CODE               _PTM_CTM_ISR (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\MAIN.OBJ)
+     00h     03afh     03bbh    000dh      CODE               _getkey (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\MAIN.OBJ)
+     00h     03bch     03ffh    0044h      CODE               _KeyScan (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\MAIN.OBJ)
+     00h     0400h     0503h    0104h      CODE               _main (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\MAIN.OBJ)
+     00h     0504h     0508h    0005h      CODE               _System_Init (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\CODECONFIG.OBJ)
+     00h     0509h     0514h    000ch      CODE               _System_Setting (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\CODECONFIG.OBJ)
+     00h     0515h     051eh    000ah      CODE               _STM_ISR (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\HT8_IT.OBJ)
+     00h     051fh     0528h    000ah      CODE               _LVD_EEPROM_ISR (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\HT8_IT.OBJ)
+     00h     0529h     0533h    000bh      CODE               _SysClock_Init (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\HT8_SYS_CLOCK.OBJ)
+     00h     0534h     05a9h    0076h      CODE               _GPIO_Init (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\HT8_GPIO.OBJ)
+     00h     05aah     05b0h    0007h      CODE               _CTM_Init (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\HT8_CTM.OBJ)
+     00h     05b1h     05b5h    0005h      CODE               _CTM_CounterModeConfig (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\HT8_CTM.OBJ)
+     00h     05b6h     05c4h    000fh      CODE               _Clear_Rx_databuf (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\HT8_UART.OBJ)
+     00h     05c5h     05d3h    000fh      CODE               _Clear_Tx_databuf (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\HT8_UART.OBJ)
+     00h     05d4h     05e6h    0013h      CODE               _Communicate_Init (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\HT8_UART.OBJ)
+     00h     05e7h     061ch    0036h      CODE               _UART_ISR (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\HT8_UART.OBJ)
+     00h     061dh     062dh    0011h      CODE               @ROMDATA_BASE (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\STARTUP1_L.OBJ)
+     00h     062eh     0637h    000ah      CODE               __DELAYX (C:\Program Files\Holtek MCU Development Tools\HT-IDE3000V8.x\LIB\LIBHOLTEKGCC.LIB)
+     00h     0638h     0645h    000eh      CODE               _builtin_holtek_delay_isr00 (C:\Program Files\Holtek MCU Development Tools\HT-IDE3000V8.x\LIB\LIBHOLTEKGCC.LIB)
+     00h     0646h     066ah    0025h      CODE               _builtin_holtek_divmodhi4_isr00 (C:\Program Files\Holtek MCU Development Tools\HT-IDE3000V8.x\LIB\LIBHOLTEKGCC.LIB)
+     00h     066bh     0678h    000eh      CODE               _CROM2PROM (CROM2PROM)
+     00h     0080h     0081h    0002h      DATA     2.5       @BITDATASEC (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\STARTUP1_L.OBJ)
+     00h     0082h     0082h    0001h      DATA     37        @data_ra (C:\Program Files\Holtek MCU Development Tools\HT-IDE3000V8.x\LIB\LIBHOLTEKGCC.LIB)
+     00h     0083h     0083h    0001h      DATA     55        @data_rb (C:\Program Files\Holtek MCU Development Tools\HT-IDE3000V8.x\LIB\LIBHOLTEKGCC.LIB)
+     00h     0084h     0084h    0001h      DATA     39        @data_rc (C:\Program Files\Holtek MCU Development Tools\HT-IDE3000V8.x\LIB\LIBHOLTEKGCC.LIB)
+     00h     0085h     0085h    0001h      DATA     40        @data_rd (C:\Program Files\Holtek MCU Development Tools\HT-IDE3000V8.x\LIB\LIBHOLTEKGCC.LIB)
+     00h     0086h     0086h    0001h      DATA     40        @data_re (C:\Program Files\Holtek MCU Development Tools\HT-IDE3000V8.x\LIB\LIBHOLTEKGCC.LIB)
+     00h     0087h     0087h    0001h      DATA     2         @data_r110 (isr:ra~rh)
+     00h     0088h     0088h    0001h      DATA     2         @data_r210 (isr:ra~rh)
+     00h     0089h     0089h    0001h      DATA     6         @data_ra10 (isr:ra~rh)
+     00h     008ah     008ah    0001h      DATA     2         @data_r10c (isr:ra~rh)
+     00h     008bh     008bh    0001h      DATA     2         @data_r20c (isr:ra~rh)
+     00h     008ch     008ch    0001h      DATA     2         @data_r114 (isr:ra~rh)
+     00h     008dh     008dh    0001h      DATA     2         @data_r214 (isr:ra~rh)
+     00h     008eh     008eh    0001h      DATA     2         @data_r12c (isr:ra~rh)
+     00h     008fh     008fh    0001h      DATA     2         @data_r22c (isr:ra~rh)
+     00h     0090h     0090h    0001h      DATA     5         @data_ra2c (isr:ra~rh)
+     00h     0091h     0091h    0001h      DATA     4         @data_rb2c (isr:ra~rh)
+     00h     009fh     009fh    0001h      DATA     9         @HCCINIT___cnt_2247 (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\MAIN.OBJ)
+     00h     00a0h     00a0h    0001h      DATA     7         @HCCINIT_dispmode (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\MAIN.OBJ)
+     00h     00a1h     00a1h    0001h      DATA     7         @HCCINIT_calstep (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\MAIN.OBJ)
+     00h     00a2h     00a2h    0001h      DATA     7         @HCCINIT_workmode (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\MAIN.OBJ)
+     00h     00a3h     00a3h    0001h      DATA     7         @HCCINIT_KeyStatus (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\MAIN.OBJ)
+     00h     00a4h     00a4h    0001h      DATA     6         @HCCINIT_KeyPress (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\MAIN.OBJ)
+     00h     00a5h     00a5h    0001h      DATA     4         @HCCINIT_cnt5s (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\MAIN.OBJ)
+     00h     00a6h     00a7h    0002h      DATA     4         @HCCINIT_KeyCnt (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\MAIN.OBJ)
+     00h     00a8h     00a8h    0001h      DATA     4         @HCCINIT_KeyVal (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\MAIN.OBJ)
+     00h     00a9h     00a9h    0001h      DATA     3         @HCCINIT___gap_2249 (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\MAIN.OBJ)
+     00h     00aah     00aah    0001h      DATA     3         @HCCINIT___cnt10ms_2248 (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\MAIN.OBJ)
+     00h     00abh     00abh    0001h      DATA     3         @HCCINIT_cnt500ms (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\MAIN.OBJ)
+     00h     00ach     00adh    0002h      DATA     2         @HCCINIT_temp2 (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\MAIN.OBJ)
+     00h     00aeh     00afh    0002h      DATA     2         @HCCINIT_temp1 (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\MAIN.OBJ)
+     00h     00b0h     00b1h    0002h      DATA     2         @HCCINIT_tds2 (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\MAIN.OBJ)
+     00h     00b2h     00b3h    0002h      DATA     2         @HCCINIT_tds1 (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\MAIN.OBJ)
+     00h     00b4h     00b4h    0001h      DATA     1         @HCCINIT_cnt1s (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\MAIN.OBJ)
+     00h     00b5h     00b5h    0001h      DATA     7         @HCCINIT0_Uart_4msCnt (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\HT8_UART.OBJ)
+     00h     00b6h     00bdh    0008h      DATA     4         @HCCINIT0_dispbuff (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\MAIN.OBJ)
+     00h     00beh     00beh    0001h      DATA     4         @HCCINIT0_Rx_Count (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\HT8_UART.OBJ)
+     00h     00bfh     00c6h    0008h      DATA     3         @HCCINIT0_Tx_databuf (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\HT8_UART.OBJ)
+     00h     00c7h     00d1h    000bh      DATA     2.0909    @HCCINIT0_Rx_databuf (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\HT8_UART.OBJ)
+     00h     00d2h     00d2h    0001h      DATA     1         @HCCINIT0___temp_2264 (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\MAIN.OBJ)
+     00h     00d3h     00d3h    0001h      DATA     0         @HCCINIT0_Tx_Count (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\HT8_UART.OBJ)
+     00h     00d4h     00d4h    0001h      DATA     2         @data_r310 (isr:ra~rh)
+     00h     00d5h     00d5h    0001h      DATA     2         @data_r410 (isr:ra~rh)
+     00h     00d6h     00d6h    0001h      DATA     2         @data_r510 (isr:ra~rh)
+     00h     00d7h     00d7h    0001h      DATA     2         @data_r610 (isr:ra~rh)
+     00h     00d8h     00d8h    0001h      DATA     2         @data_r32c (isr:ra~rh)
+     00h     00d9h     00d9h    0001h      DATA     2         @data_r42c (isr:ra~rh)
+
+     Local Sections
+
+     Bank    Start     End      Length     Class    AvgIns    Name
+     00h     0094h     0094h    0000h      LOCAL    0         @dummy16 (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\MAIN.OBJ)
+     00h     0092h     0093h    0002h      LOCAL    8         _PTM_CTM_ISR (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\MAIN.OBJ)
+     00h     0092h     0092h    0000h      LOCAL    0         _Crom2Prom (CROM2PROM)
+     00h     009fh     009fh    0000h      LOCAL    0         @dummy (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\MAIN.OBJ)
+     00h     009eh     009eh    0001h      LOCAL    15        _main (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\MAIN.OBJ)
+     00h     0094h     0094h    0000h      LOCAL    0         _System_Init (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\CODECONFIG.OBJ)
+     00h     0094h     0094h    0000h      LOCAL    0         _SysClock_Init (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\HT8_SYS_CLOCK.OBJ)
+     00h     0094h     0094h    0000h      LOCAL    0         _GPIO_Init (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\HT8_GPIO.OBJ)
+     00h     0094h     0094h    0000h      LOCAL    0         _CTM_Init (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\HT8_CTM.OBJ)
+     00h     0094h     0094h    0000h      LOCAL    0         _Communicate_Init (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\HT8_UART.OBJ)
+     00h     0096h     0096h    0000h      LOCAL    0         _System_Setting (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\CODECONFIG.OBJ)
+     00h     0094h     0095h    0002h      LOCAL    2         _CTM_CounterModeConfig (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\HT8_CTM.OBJ)
+     00h     0094h     0094h    0001h      LOCAL    3         _builtin_holtek_delay_isr00 (C:\Program Files\Holtek MCU Development Tools\HT-IDE3000V8.x\LIB\LIBHOLTEKGCC.LIB)
+     00h     009ch     009ch    0001h      LOCAL    6         _Rx_Data_Handle (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\MAIN.OBJ)
+     00h     0094h     009bh    0008h      LOCAL    26.125    _builtin_holtek_divmodhi4_isr00 (C:\Program Files\Holtek MCU Development Tools\HT-IDE3000V8.x\LIB\LIBHOLTEKGCC.LIB)
+     00h     0094h     0094h    0000h      LOCAL    0         _Clear_Rx_databuf (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\HT8_UART.OBJ)
+     00h     0094h     0094h    0000h      LOCAL    0         _SendData (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\MAIN.OBJ)
+     00h     0094h     0094h    0000h      LOCAL    0         __DELAYX (C:\Program Files\Holtek MCU Development Tools\HT-IDE3000V8.x\LIB\LIBHOLTEKGCC.LIB)
+     00h     0094h     0094h    0000h      LOCAL    0         _Clear_Tx_databuf (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\HT8_UART.OBJ)
+     00h     0094h     0094h    0001h      LOCAL    7         _KeyScan (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\MAIN.OBJ)
+     00h     0094h     0094h    0000h      LOCAL    0         _getkey (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\MAIN.OBJ)
+     00h     009ch     009dh    0002h      LOCAL    10.5      _disptds_l (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\MAIN.OBJ)
+     00h     009ch     009dh    0002h      LOCAL    2         _disptemp_l (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\MAIN.OBJ)
+     00h     009ch     009dh    0002h      LOCAL    2         _disptemp_r (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\MAIN.OBJ)
+     00h     009ch     009dh    0002h      LOCAL    8         _disptds_r (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\MAIN.OBJ)
+     00h     0095h     0096h    0002h      LOCAL    4         _delay_ms (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\MAIN.OBJ)
+     00h     0092h     0092h    0000h      LOCAL    0         @dummy12 (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\HT8_IT.OBJ)
+     00h     0092h     0092h    0000h      LOCAL    0         _STM_ISR (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\HT8_IT.OBJ)
+     00h     0092h     0092h    0000h      LOCAL    0         @dummy20 (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\HT8_IT.OBJ)
+     00h     0092h     0092h    0000h      LOCAL    0         _LVD_EEPROM_ISR (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\HT8_IT.OBJ)
+     00h     0092h     0092h    0000h      LOCAL    0         @dummy44 (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\HT8_UART.OBJ)
+     00h     0092h     0092h    0000h      LOCAL    0         _UART_ISR (f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\HT8_UART.OBJ)
+
+     Public Symbols Information
+     Address            Public by Name
+     0018h              _ADC_ISR
+     0008h              _COMP_ISR
+     05b1h              _CTM_CounterModeConfig
+     05aah              _CTM_Init
+     05b6h              _Clear_Rx_databuf
+     05c5h              _Clear_Tx_databuf
+     05d4h              _Communicate_Init
+     066bh              _Crom2Prom
+     066bh              _Crom2PromNext
+     0081h[0]           _F_UART
+     0534h              _GPIO_Init
+     0004h              _INT0_ISR
+     0024h              _INT1_ISR
+     00a6h              _KeyCnt
+     00a4h              _KeyPress
+     03bch              _KeyScan
+     00a3h              _KeyStatus
+     00a8h              _KeyVal
+     051fh              _LVD_EEPROM_ISR
+     02ffh              _PTM_CTM_ISR
+     00beh              _Rx_Count
+     0289h              _Rx_Data_Handle
+     00c7h              _Rx_databuf
+     0515h              _STM_ISR
+     0259h              _SendData
+     0529h              _SysClock_Init
+     0504h              _System_Init
+     0509h              _System_Setting
+     001ch              _TB0_ISR
+     0020h              _TB1_ISR
+     00d3h              _Tx_Count
+     00bfh              _Tx_databuf
+     05e7h              _UART_ISR
+     00b5h              _Uart_4msCnt
+     0631h              __DELAYX0
+     0630h              __DELAYX1
+     0630h              __DELAYX2
+     062fh              __DELAYX3
+     062fh              __DELAYX4
+     062eh              __DELAYX5
+     062eh              __DELAYX6
+     063ah              __DELAYY0_isr00
+     063ah              __DELAYY1_isr00
+     0639h              __DELAYY2_isr00
+     0639h              __DELAYY3_isr00
+     0638h              __DELAYY4_isr00
+     0638h              __DELAYY5_isr00
+     0646h              _builtin_holtek_udivmodhi4_isr00
+     0097h              _builtin_holtek_udivmodhi4_isr00_2
+     00a1h              _calstep
+     00b4h              _cnt1s
+     00abh              _cnt500ms
+     00a5h              _cnt5s
+     0051h              _delay_ms
+     0095h              _delay_ms_2
+     00b6h              _dispbuff
+     0025h              _dispcode
+     00a0h              _dispmode
+     0061h              _disptds_l
+     009ch              _disptds_l_2
+     00fbh              _disptds_r
+     0195h              _disptemp_l
+     01f7h              _disptemp_r
+     0080h[3]           _f10ms
+     0080h[0]           _f500ms
+     0080h[2]           _flash
+     03afh              _getkey
+     0080h[1]           _loop
+     0400h              _main
+     00b2h              _tds1
+     00b0h              _tds2
+     00aeh              _temp1
+     00ach              _temp2
+     00a2h              _workmode
+     008ah              r10c
+     0087h              r110
+     008ch              r114
+     008eh              r12c
+     008bh              r20c
+     0088h              r210
+     008dh              r214
+     008fh              r22c
+     00d4h              r310
+     00d8h              r32c
+     00d5h              r410
+     00d9h              r42c
+     00d6h              r510
+     00d7h              r610
+     0082h              ra
+     0089h              ra10
+     0090h              ra2c
+     0083h              rb
+     0091h              rb2c
+     0084h              rc
+     0085h              rd
+     0086h              re
+     061dh              startup_value_1
+
+     Address            Public by Value
+     0004h              _INT0_ISR
+     0008h              _COMP_ISR
+     0018h              _ADC_ISR
+     001ch              _TB0_ISR
+     0020h              _TB1_ISR
+     0024h              _INT1_ISR
+     0025h              _dispcode
+     0051h              _delay_ms
+     0061h              _disptds_l
+     0082h              ra
+     0083h              rb
+     0084h              rc
+     0085h              rd
+     0086h              re
+     0087h              r110
+     0088h              r210
+     0089h              ra10
+     008ah              r10c
+     008bh              r20c
+     008ch              r114
+     008dh              r214
+     008eh              r12c
+     008fh              r22c
+     0090h              ra2c
+     0091h              rb2c
+     0095h              _delay_ms_2
+     0097h              _builtin_holtek_udivmodhi4_isr00_2
+     009ch              _disptds_l_2
+     00a0h              _dispmode
+     00a1h              _calstep
+     00a2h              _workmode
+     00a3h              _KeyStatus
+     00a4h              _KeyPress
+     00a5h              _cnt5s
+     00a6h              _KeyCnt
+     00a8h              _KeyVal
+     00abh              _cnt500ms
+     00ach              _temp2
+     00aeh              _temp1
+     00b0h              _tds2
+     00b2h              _tds1
+     00b4h              _cnt1s
+     00b5h              _Uart_4msCnt
+     00b6h              _dispbuff
+     00beh              _Rx_Count
+     00bfh              _Tx_databuf
+     00c7h              _Rx_databuf
+     00d3h              _Tx_Count
+     00d4h              r310
+     00d5h              r410
+     00d6h              r510
+     00d7h              r610
+     00d8h              r32c
+     00d9h              r42c
+     00fbh              _disptds_r
+     0195h              _disptemp_l
+     01f7h              _disptemp_r
+     0259h              _SendData
+     0289h              _Rx_Data_Handle
+     02ffh              _PTM_CTM_ISR
+     03afh              _getkey
+     03bch              _KeyScan
+     0400h              _main
+     0080h[0]           _f500ms
+     0080h[1]           _loop
+     0080h[2]           _flash
+     0080h[3]           _f10ms
+     0081h[0]           _F_UART
+     0504h              _System_Init
+     0509h              _System_Setting
+     0515h              _STM_ISR
+     051fh              _LVD_EEPROM_ISR
+     0529h              _SysClock_Init
+     0534h              _GPIO_Init
+     05aah              _CTM_Init
+     05b1h              _CTM_CounterModeConfig
+     05b6h              _Clear_Rx_databuf
+     05c5h              _Clear_Tx_databuf
+     05d4h              _Communicate_Init
+     05e7h              _UART_ISR
+     061dh              startup_value_1
+     062eh              __DELAYX6
+     062eh              __DELAYX5
+     062fh              __DELAYX4
+     062fh              __DELAYX3
+     0630h              __DELAYX2
+     0630h              __DELAYX1
+     0631h              __DELAYX0
+     0638h              __DELAYY5_isr00
+     0638h              __DELAYY4_isr00
+     0639h              __DELAYY3_isr00
+     0639h              __DELAYY2_isr00
+     063ah              __DELAYY1_isr00
+     063ah              __DELAYY0_isr00
+     0646h              _builtin_holtek_udivmodhi4_isr00
+     066bh              _Crom2Prom
+     066bh              _Crom2PromNext
+
+
+ROM Usage Statistics
+     Size      Used     Percentage
+     1000h     0665h    39%
+
+RAM Usage Statistics
+    Bank      Size      Used     Percentage
+     00h       0080h     005ah    70%
+     01h       0080h     0000h    0%
+     Total     0100h     005ah    35%
+
+Use Stack Count
+_PTM_CTM_ISR: 1
+_main: 2
+_STM_ISR: 0
+_LVD_EEPROM_ISR: 0
+_UART_ISR: 0
+
+Call Tree
+    @dummy16
+        _PTM_CTM_ISR (0)
+            _Crom2Prom (1)
+    @dummy
+        _main (0)
+            _System_Init (1)
+                _SysClock_Init (2)
+                _GPIO_Init (2)
+                _CTM_Init (2)
+                _Communicate_Init (2)
+            _System_Setting (1)
+                _CTM_CounterModeConfig (2)
+            _builtin_holtek_delay_isr00 (1)
+            _Rx_Data_Handle (1)
+                _builtin_holtek_divmodhi4_isr00 (2)
+                _Clear_Rx_databuf (2)
+            _SendData (1)
+                __DELAYX (2)
+                _Crom2Prom (2)
+                _Clear_Tx_databuf (2)
+            _KeyScan (1)
+                _getkey (2)
+            _disptds_l (1)
+                _builtin_holtek_divmodhi4_isr00 (2)
+                _Crom2Prom (2)
+            _disptemp_l (1)
+                _builtin_holtek_divmodhi4_isr00 (2)
+                _Crom2Prom (2)
+            _disptemp_r (1)
+                _builtin_holtek_divmodhi4_isr00 (2)
+                _Crom2Prom (2)
+            _disptds_r (1)
+                _builtin_holtek_divmodhi4_isr00 (2)
+                _Crom2Prom (2)
+            _delay_ms (1)
+                _builtin_holtek_delay_isr00 (2)
+    @dummy12
+        _STM_ISR (0)
+    @dummy20
+        _LVD_EEPROM_ISR (0)
+    @dummy44
+        _UART_ISR (0)
+
+HLINK : 程序的开始执行点在程序段'@code'（地址0）。定义在'f:\zccback\案例\tds\双路tds模块\显示模块\tds_disp\output\MAIN.OBJ' 文件中
+
+错误总数 : 0  警告总数 : 0

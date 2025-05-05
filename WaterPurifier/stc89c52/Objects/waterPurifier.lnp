@@ -1,0 +1,6 @@
+".\Objects\STARTUP.obj",
+".\Objects\main.obj",
+".\Objects\delay.obj",
+".\Objects\i2c.obj" 
+TO ".\Objects\waterPurifier" 
+PRINT(".\Listings\waterPurifier.m51") RAMSIZE(256) 

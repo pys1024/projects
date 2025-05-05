@@ -23,7 +23,9 @@
 			"ranges": "cpp",
 			"regex": "cpp",
 			"random": "cpp",
-			"numbers": "cpp"
+			"numbers": "cpp",
+			"compare": "cpp",
+			"cstdint": "cpp"
 		}
 	}
 }

@@ -53,7 +53,7 @@ def get_url(dev_id):
         global dev_ip
         if (msg.topic == topic_ip):
             dev_ip = str(msg.payload.decode())
-            client.publish(topic_update, 'go', 1)
+            client.publish(topic_update, 'go', qos=1, retain=True)
             time.sleep(2)
             client.disconnect()
 

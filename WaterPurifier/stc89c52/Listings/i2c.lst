@@ -1,0 +1,123 @@
+C51 COMPILER V9.60.7.0   I2C                                                               05/04/2025 11:51:51 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE I2C
+OBJECT MODULE PLACED IN .\Objects\i2c.obj
+COMPILER INVOKED BY: d:\Keil_v5\C51\BIN\C51.EXE i2c.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\i2c.l
+                    -st) TABS(2) OBJECT(.\Objects\i2c.obj)
+
+line level    source
+
+   1          #include "reg52.h"
+   2          #include "i2c.h"
+   3          
+   4          sbit SDA = P2^1;
+   5          sbit SCL = P2^0;
+   6          
+   7          void i2c_init() {
+   8   1          SDA = 1;  // Set SDA to high level
+   9   1          SCL = 1;  // Set SCL to high level
+  10   1      }
+  11          
+  12          // I2C slave start function
+  13          uint8_t i2c_slave_start(uint8_t *addr) {
+  14   1          uint8_t ack = 0;
+  15   1      
+  16   1          // Wait for start signal
+  17   1          while (SDA == 1 && SCL == 1);
+  18   1          DELAY_5US();
+  19   1      
+  20   1          // Detect start signal
+  21   1          if (SDA == 0 && SCL == 1) {
+  22   2              DELAY_5US();
+  23   2              while (SCL == 1);  // Wait for master to pull SCL low
+  24   2              ack = 1;      // Indicates a master request
+  25   2      
+  26   2              // Read the address sent by the master
+  27   2              *addr = i2c_slave_read();  // Store the received address in the pointer
+  28   2          }
+  29   1      
+  30   1          return ack;
+  31   1      }
+  32          
+  33          void i2c_slave_stop() {
+  34   1          SDA = 1;
+  35   1          SCL = 1;
+  36   1      
+  37   1          while (SDA != 1 || SCL != 1);  // Wait for stop signal
+  38   1      }
+  39          
+  40          // I2C slave write data function with ACK handling
+  41          uint8_t i2c_slave_write(uint8_t data0) {
+  42   1          uint8_t i = 0;
+  43   1      
+  44   1          do {
+  45   2              SDA = (data0 & 0x80) ? 1 : 0;  // Send the most significant bit
+  46   2              data0 <<= 1;  // Shift left by one bit
+  47   2              DELAY_5US();
+  48   2              while (SCL == 0);  // Wait for master to pull SCL high
+  49   2              DELAY_5US();
+  50   2              while (SCL == 1);  // Wait for master to pull SCL low
+  51   2          } while (++i < 8);
+  52   1      
+  53   1          // Wait for ACK from the master
+  54   1          SDA = 1;  // Release SDA
+C51 COMPILER V9.60.7.0   I2C                                                               05/04/2025 11:51:51 PAGE 2   
+
+  55   1          DELAY_5US();
+  56   1          while (SCL == 0);  // Wait for master to pull SCL high
+  57   1      
+  58   1          // Check if master sent ACK (SDA should be low)
+  59   1          DELAY_5US();
+  60   1          if (SDA) {
+  61   2              // No ACK received, handle error if necessary
+  62   2              i = 0;
+  63   2          } else {
+  64   2              i = 1;  // ACK received
+  65   2          }
+  66   1      
+  67   1          while (SCL == 1);  // Wait for master to pull SCL low
+  68   1      
+  69   1          return i;
+  70   1      }
+  71          
+  72          // I2C slave read data function with ACK handling
+  73          uint8_t i2c_slave_read() {
+  74   1          uint8_t i = 0;
+  75   1          uint8_t data0 = 0;
+  76   1      
+  77   1          for (i = 0; i < 8; i++) {
+  78   2              DELAY_5US();
+  79   2              while (SCL == 0);  // Wait for master to pull SCL high
+  80   2              DELAY_5US();
+  81   2              data0 <<= 1;
+  82   2              if (SDA) {
+  83   3                  data0 |= 0x01;  // Read data bit when SCL is high
+  84   3              }
+  85   2              while (SCL == 1);  // Wait for master to pull SCL low
+  86   2          }
+  87   1      
+  88   1          // Send ACK signal to the master
+  89   1          SDA = 0;  // Pull SDA low to indicate ACK
+  90   1          DELAY_5US();
+  91   1          while (SCL == 0);  // Wait for master to pull SCL high
+  92   1          DELAY_5US();
+  93   1          while (SCL == 1);  // Wait for master to pull SCL low
+  94   1          SDA = 1;  // Release SDA
+  95   1      
+  96   1          return data0;
+  97   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    174    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----       4
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

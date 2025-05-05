@@ -1,0 +1,672 @@
+﻿<?xml version="1.0" encoding="utf-8"?>	
+<NTC_Devices>
+
+
+
+  <NTC_Device Name="3435 10K">
+    <!--Value表示電阻值,單位K,Precision表示精度-->
+    <R25 Value="10K" Precision="1" />
+    <!--Value表示β值,Precision表示精度-->
+    <BetaValue Value="3435" Precision="1"/>
+    <!--溫度範圍-->
+    <TempatureRange Min="0" Max="99" /> 
+	<RNTC>
+		<Item Value="27620"/><!--0-->
+		<Item Value="26440"/><!--1-->
+		<Item Value="25320"/><!--2-->
+		<Item Value="24250"/><!--3-->
+		<Item Value="23230"/><!--4-->
+		<Item Value="22270"/><!--5-->
+		<Item Value="21340"/><!--6-->
+		<Item Value="20460"/><!--7-->
+		<Item Value="19630"/><!--8-->
+		<Item Value="18830"/><!--9-->
+		<Item Value="18070"/><!--10-->
+		<Item Value="17340"/><!--11-->
+		<Item Value="16650"/><!--12-->
+		<Item Value="15980"/><!--13-->
+		<Item Value="15350"/><!--14-->
+		<Item Value="14750"/><!--15-->
+		<Item Value="14170"/><!--16-->
+		<Item Value="13620"/><!--17-->
+		<Item Value="13090"/><!--18-->
+		<Item Value="12590"/><!--19-->
+		<Item Value="12110"/><!--20-->
+		<Item Value="11650"/><!--21-->
+		<Item Value="11210"/><!--22-->
+		<Item Value="10790"/><!--23-->
+		<Item Value="10390"/><!--24-->
+		<Item Value="10000"/><!--25-->
+		<Item Value="9631"/><!--26-->
+		<Item Value="9280"/><!--27-->
+		<Item Value="8938"/><!--28-->
+		<Item Value="8613"/><!--29-->
+		<Item Value="8302"/><!--30-->
+		<Item Value="8004"/><!--31-->
+		<Item Value="7718"/><!--32-->
+		<Item Value="7444"/><!--33-->
+		<Item Value="7180"/><!--34-->
+		<Item Value="6928"/><!--35-->
+		<Item Value="6686"/><!--36-->
+		<Item Value="6454"/><!--37-->
+		<Item Value="6230"/><!--38-->
+		<Item Value="6016"/><!--39-->
+		<Item Value="5810"/><!--40-->
+		<Item Value="5613"/><!--41-->
+		<Item Value="5423"/><!--42-->
+		<Item Value="5240"/><!--43-->
+		<Item Value="5065"/><!--44-->
+		<Item Value="4897"/><!--45-->
+		<Item Value="4734"/><!--46-->
+		<Item Value="4578"/><!--47-->
+		<Item Value="4429"/><!--48-->
+		<Item Value="4284"/><!--49-->
+		<Item Value="4145"/><!--50-->
+		<Item Value="4012"/><!--51-->
+		<Item Value="3883"/><!--52-->
+		<Item Value="3759"/><!--53-->
+		<Item Value="3640"/><!--54-->
+		<Item Value="3525"/><!--55-->
+		<Item Value="3415"/><!--56-->
+		<Item Value="3308"/><!--57-->
+		<Item Value="3205"/><!--58-->
+		<Item Value="3106"/><!--59-->
+		<Item Value="3011"/><!--60-->
+		<Item Value="2919"/><!--61-->
+		<Item Value="2830"/><!--62-->
+		<Item Value="2744"/><!--63-->
+		<Item Value="2662"/><!--64-->
+		<Item Value="2582"/><!--65-->
+		<Item Value="2505"/><!--66-->
+		<Item Value="2431"/><!--67-->
+		<Item Value="2359"/><!--68-->
+		<Item Value="2290"/><!--69-->
+		<Item Value="2223"/><!--70-->
+		<Item Value="2158"/><!--71-->
+		<Item Value="2096"/><!--72-->
+		<Item Value="2036"/><!--73-->
+		<Item Value="1978"/><!--74-->
+		<Item Value="1921"/><!--75-->
+		<Item Value="1867"/><!--76-->
+		<Item Value="1814"/><!--77-->
+		<Item Value="1764"/><!--78-->
+		<Item Value="1714"/><!--79-->
+		<Item Value="1667"/><!--80-->
+		<Item Value="1621"/><!--81-->
+		<Item Value="1576"/><!--82-->
+		<Item Value="1533"/><!--83-->
+		<Item Value="1492"/><!--84-->
+		<Item Value="1451"/><!--85-->
+		<Item Value="1412"/><!--86-->
+		<Item Value="1374"/><!--87-->
+		<Item Value="1338"/><!--88-->
+		<Item Value="1302"/><!--89-->
+		<Item Value="1268"/><!--90-->
+		<Item Value="1235"/><!--91-->
+		<Item Value="1203"/><!--92-->
+		<Item Value="1171"/><!--93-->
+		<Item Value="1141"/><!--94-->
+		<Item Value="1112"/><!--95-->
+		<Item Value="1083"/><!--96-->
+		<Item Value="1056"/><!--97-->
+		<Item Value="1029"/><!--98-->
+		<Item Value="1003"/><!--99-->
+	</RNTC>
+  </NTC_Device>
+  
+  <NTC_Device Name="3950 5K">
+    <!--Value表示電阻值,單位K,Precision表示精度-->
+    <R25 Value="5K" Precision="1" />
+    <!--Value表示β值,Precision表示精度-->
+    <BetaValue Value="3950" Precision="1"/>
+    <!--溫度範圍-->
+    <TempatureRange Min="0" Max="99" /> 
+	<RNTC>
+		<Item Value="16480"/>
+		<Item Value="15651"/>
+		<Item Value="14870"/>
+		<Item Value="14133"/>
+		<Item Value="13438"/>
+		<Item Value="12781"/>
+		<Item Value="12161"/>
+		<Item Value="11574"/>
+		<Item Value="11019"/>
+		<Item Value="10494"/>
+		<Item Value="9998"/>
+		<Item Value="9527"/>
+		<Item Value="9081"/>
+		<Item Value="8659"/>
+		<Item Value="8259"/>
+		<Item Value="7879"/>
+		<Item Value="7519"/>
+		<Item Value="7178"/>
+		<Item Value="6854"/>
+		<Item Value="6547"/>
+		<Item Value="6255"/>
+		<Item Value="5977"/>
+		<Item Value="5714"/>
+		<Item Value="5464"/>
+		<Item Value="5226"/>
+		<Item Value="5000"/>
+		<Item Value="4784"/>
+		<Item Value="4580"/>
+		<Item Value="4385"/>
+		<Item Value="4200"/>
+		<Item Value="4024"/>
+		<Item Value="3856"/>
+		<Item Value="3696"/>
+		<Item Value="3543"/>
+		<Item Value="3398"/>
+		<Item Value="3259"/>
+		<Item Value="3127"/>
+		<Item Value="3001"/>
+		<Item Value="2880"/>
+		<Item Value="2765"/>
+		<Item Value="2656"/>
+		<Item Value="2551"/>
+		<Item Value="2451"/>
+		<Item Value="2355"/>
+		<Item Value="2264"/>
+		<Item Value="2177"/>
+		<Item Value="2093"/>
+		<Item Value="2013"/>
+		<Item Value="1937"/>
+		<Item Value="1864"/>
+		<Item Value="1794"/>
+		<Item Value="1727"/>
+		<Item Value="1662"/>
+		<Item Value="1601"/>
+		<Item Value="1542"/>
+		<Item Value="1486"/>
+		<Item Value="1432"/>
+		<Item Value="1380"/>
+		<Item Value="1331"/>
+		<Item Value="1283"/>
+		<Item Value="1238"/>
+		<Item Value="1194"/>
+		<Item Value="1152"/>
+		<Item Value="1112"/>
+		<Item Value="1073"/>
+		<Item Value="1036"/>
+		<Item Value="1000"/>
+		<Item Value="966"/>
+		<Item Value="933"/>
+		<Item Value="902"/>
+		<Item Value="872"/>
+		<Item Value="842"/>
+		<Item Value="814"/>
+		<Item Value="787"/>
+		<Item Value="761"/>
+		<Item Value="736"/>
+		<Item Value="712"/>
+		<Item Value="689"/>
+		<Item Value="667"/>
+		<Item Value="645"/>
+		<Item Value="625"/>
+		<Item Value="605"/>
+		<Item Value="586"/>
+		<Item Value="567"/>
+		<Item Value="549"/>
+		<Item Value="532"/>
+		<Item Value="516"/>
+		<Item Value="500"/>
+		<Item Value="485"/>
+		<Item Value="470"/>
+		<Item Value="456"/>
+		<Item Value="442"/>
+		<Item Value="429"/>
+		<Item Value="416"/>
+		<Item Value="403"/>
+		<Item Value="391"/>
+		<Item Value="380"/>
+		<Item Value="369"/>
+		<Item Value="358"/>
+		<Item Value="348"/>	
+	</RNTC>
+  </NTC_Device>
+  
+  <NTC_Device Name="3950 10K">
+    <!--Value表示電阻值,單位K,Precision表示精度-->
+    <R25 Value="10K" Precision="1" />
+    <!--Value表示β值,Precision表示精度-->
+    <BetaValue Value="3950" Precision="1"/>
+    <!--溫度範圍-->
+    <TempatureRange Min="0" Max="99" /> 
+	<RNTC>
+		<Item Value="31770"/>
+		<Item Value="30250"/>
+		<Item Value="28820"/>
+		<Item Value="27450"/>
+		<Item Value="26160"/>
+		<Item Value="24940"/>
+		<Item Value="23770"/>
+		<Item Value="22670"/>
+		<Item Value="21620"/>
+		<Item Value="20630"/>
+		<Item Value="19680"/>
+		<Item Value="18780"/>
+		<Item Value="17930"/>
+		<Item Value="17120"/>
+		<Item Value="16350"/>
+		<Item Value="15620"/>
+		<Item Value="14930"/>
+		<Item Value="14260"/>
+		<Item Value="13630"/>
+		<Item Value="13040"/>
+		<Item Value="12470"/>
+		<Item Value="11920"/>
+		<Item Value="11410"/>
+		<Item Value="10910"/>
+		<Item Value="10450"/>
+		<Item Value="10000"/>
+		<Item Value="9575"/>
+		<Item Value="9170"/>
+		<Item Value="8784"/>
+		<Item Value="8416"/>
+		<Item Value="8064"/>
+		<Item Value="7730"/>
+		<Item Value="7410"/>
+		<Item Value="7106"/>
+		<Item Value="6815"/>
+		<Item Value="6538"/>
+		<Item Value="6273"/>
+		<Item Value="6020"/>
+		<Item Value="5778"/>
+		<Item Value="5548"/>
+		<Item Value="5327"/>
+		<Item Value="5117"/>
+		<Item Value="4915"/>
+		<Item Value="4723"/>
+		<Item Value="4539"/>
+		<Item Value="4363"/>
+		<Item Value="4195"/>
+		<Item Value="4034"/>
+		<Item Value="3880"/>
+		<Item Value="3733"/>
+		<Item Value="3592"/>
+		<Item Value="3457"/>
+		<Item Value="3328"/>
+		<Item Value="3204"/>
+		<Item Value="3086"/>
+		<Item Value="2972"/>
+		<Item Value="2863"/>
+		<Item Value="2759"/>
+		<Item Value="2659"/>
+		<Item Value="2564"/>
+		<Item Value="2472"/>
+		<Item Value="2384"/>
+		<Item Value="2299"/>
+		<Item Value="2218"/>
+		<Item Value="2141"/>
+		<Item Value="2066"/>
+		<Item Value="1994"/>
+		<Item Value="1926"/>
+		<Item Value="1860"/>
+		<Item Value="1796"/>
+		<Item Value="1735"/>
+		<Item Value="1677"/>
+		<Item Value="1621"/>
+		<Item Value="1567"/>
+		<Item Value="1515"/>
+		<Item Value="1465"/>
+		<Item Value="1417"/>
+		<Item Value="1371"/>
+		<Item Value="1326"/>
+		<Item Value="1284"/>
+		<Item Value="1243"/>
+		<Item Value="1203"/>
+		<Item Value="1165"/>
+		<Item Value="1127"/>
+		<Item Value="1093"/>
+		<Item Value="1059"/>
+		<Item Value="1027"/>
+		<Item Value="996"/>
+		<Item Value="965"/>
+		<Item Value="936"/>
+		<Item Value="908"/>
+		<Item Value="881"/>
+		<Item Value="855"/>
+		<Item Value="830"/>
+		<Item Value="805"/>
+		<Item Value="782"/>
+		<Item Value="759"/>
+		<Item Value="737"/>
+		<Item Value="715"/>
+		<Item Value="695"/>	
+	</RNTC>
+  </NTC_Device>
+  
+  <NTC_Device Name="3950 20K">
+    <!--Value表示電阻值,單位K,Precision表示精度-->
+    <R25 Value="20K" Precision="1" />
+    <!--Value表示β值,Precision表示精度-->
+    <BetaValue Value="3950" Precision="1"/>
+    <!--溫度範圍-->
+    <TempatureRange Min="0" Max="99" /> 
+	<RNTC>
+		<Item Value="65509"/>
+		<Item Value="62248"/>
+		<Item Value="59169"/>
+		<Item Value="56260"/>
+		<Item Value="53511"/>
+		<Item Value="50912"/>
+		<Item Value="48454"/>
+		<Item Value="46130"/>
+		<Item Value="43930"/>
+		<Item Value="41847"/>
+		<Item Value="39875"/>
+		<Item Value="38008"/>
+		<Item Value="36238"/>
+		<Item Value="34561"/>
+		<Item Value="32971"/>
+		<Item Value="31463"/>
+		<Item Value="30032"/>
+		<Item Value="28675"/>
+		<Item Value="27386"/>
+		<Item Value="26163"/>
+		<Item Value="25001"/>
+		<Item Value="23897"/>
+		<Item Value="22847"/>
+		<Item Value="21850"/>
+		<Item Value="20902"/>
+		<Item Value="20000"/>
+		<Item Value="19141"/>
+		<Item Value="18325"/>
+		<Item Value="17547"/>
+		<Item Value="16807"/>
+		<Item Value="16102"/>
+		<Item Value="15430"/>
+		<Item Value="14790"/>
+		<Item Value="14180"/>
+		<Item Value="13599"/>
+		<Item Value="13044"/>
+		<Item Value="12515"/>
+		<Item Value="12010"/>
+		<Item Value="11528"/>
+		<Item Value="11068"/>
+		<Item Value="10629"/>
+		<Item Value="10209"/>
+		<Item Value="9809"/>
+		<Item Value="9426"/>
+		<Item Value="9060"/>
+		<Item Value="8710"/>
+		<Item Value="8375"/>
+		<Item Value="8055"/>
+		<Item Value="7749"/>
+		<Item Value="7456"/>
+		<Item Value="7176"/>
+		<Item Value="6908"/>
+		<Item Value="6651"/>
+		<Item Value="6405"/>
+		<Item Value="6169"/>
+		<Item Value="5943"/>
+		<Item Value="5726"/>
+		<Item Value="5519"/>
+		<Item Value="5320"/>
+		<Item Value="5129"/>
+		<Item Value="4946"/>
+		<Item Value="4771"/>
+		<Item Value="4602"/>
+		<Item Value="4441"/>
+		<Item Value="4286"/>
+		<Item Value="4137"/>
+		<Item Value="3994"/>
+		<Item Value="3856"/>
+		<Item Value="3724"/>
+		<Item Value="3597"/>
+		<Item Value="3476"/>
+		<Item Value="3358"/>
+		<Item Value="3246"/>
+		<Item Value="3137"/>
+		<Item Value="3033"/>
+		<Item Value="2933"/>
+		<Item Value="2837"/>
+		<Item Value="2744"/>
+		<Item Value="2655"/>
+		<Item Value="2569"/>
+		<Item Value="2486"/>
+		<Item Value="2406"/>
+		<Item Value="2329"/>
+		<Item Value="2255"/>
+		<Item Value="2184"/>
+		<Item Value="2116"/>
+		<Item Value="2049"/>
+		<Item Value="1986"/>
+		<Item Value="1924"/>
+		<Item Value="1865"/>
+		<Item Value="1808"/>
+		<Item Value="1752"/>
+		<Item Value="1699"/>
+		<Item Value="1648"/>
+		<Item Value="1598"/>
+		<Item Value="1550"/>
+		<Item Value="1504"/>
+		<Item Value="1460"/>
+		<Item Value="1417"/>
+		<Item Value="1375"/>	
+	</RNTC>
+  </NTC_Device> 
+  
+  <NTC_Device Name="3950 50K">
+    <!--Value表示電阻值,單位K,Precision表示精度-->
+    <R25 Value="50K" Precision="1" />
+    <!--Value表示β值,Precision表示精度-->
+    <BetaValue Value="3950" Precision="1"/>
+    <!--溫度範圍-->
+    <TempatureRange Min="0" Max="99" /> 
+	<RNTC>
+		<Item Value="162896"/>
+		<Item Value="154835"/>
+		<Item Value="147220"/>
+		<Item Value="140023"/>
+		<Item Value="133219"/>
+		<Item Value="126784"/>
+		<Item Value="120697"/>
+		<Item Value="114936"/>
+		<Item Value="109483"/>
+		<Item Value="104319"/>
+		<Item Value="99428"/>
+		<Item Value="94793"/>
+		<Item Value="90400"/>
+		<Item Value="86234"/>
+		<Item Value="82284"/>
+		<Item Value="78536"/>
+		<Item Value="74980"/>
+		<Item Value="71604"/>
+		<Item Value="68398"/>
+		<Item Value="65353"/>
+		<Item Value="62460"/>
+		<Item Value="59711"/>
+		<Item Value="57098"/>
+		<Item Value="54612"/>
+		<Item Value="52249"/>
+		<Item Value="50000"/>
+		<Item Value="47859"/>
+		<Item Value="45822"/>
+		<Item Value="43882"/>
+		<Item Value="42034"/>
+		<Item Value="40274"/>
+		<Item Value="38596"/>
+		<Item Value="36997"/>
+		<Item Value="35473"/>
+		<Item Value="34019"/>
+		<Item Value="32633"/>
+		<Item Value="31309"/>
+		<Item Value="30047"/>
+		<Item Value="28841"/>
+		<Item Value="27690"/>
+		<Item Value="26591"/>
+		<Item Value="25541"/>
+		<Item Value="24537"/>
+		<Item Value="23578"/>
+		<Item Value="22662"/>
+		<Item Value="21785"/>
+		<Item Value="20947"/>
+		<Item Value="20145"/>
+		<Item Value="19378"/>
+		<Item Value="18643"/>
+		<Item Value="17940"/>
+		<Item Value="17267"/>
+		<Item Value="16623"/>
+		<Item Value="16006"/>
+		<Item Value="15414"/>
+		<Item Value="14848"/>
+		<Item Value="14304"/>
+		<Item Value="13784"/>
+		<Item Value="13284"/>
+		<Item Value="12805"/>
+		<Item Value="12346"/>
+		<Item Value="11905"/>
+		<Item Value="11483"/>
+		<Item Value="11077"/>
+		<Item Value="10687"/>
+		<Item Value="10313"/>
+		<Item Value="9954"/>
+		<Item Value="9608"/>
+		<Item Value="9277"/>
+		<Item Value="8958"/>
+		<Item Value="8652"/>
+		<Item Value="8358"/>
+		<Item Value="8075"/>
+		<Item Value="7803"/>
+		<Item Value="7541"/>
+		<Item Value="7289"/>
+		<Item Value="7047"/>
+		<Item Value="6814"/>
+		<Item Value="6590"/>
+		<Item Value="6374"/>
+		<Item Value="6166"/>
+		<Item Value="5966"/>
+		<Item Value="5773"/>
+		<Item Value="5587"/>
+		<Item Value="5408"/>
+		<Item Value="5236"/>
+		<Item Value="5070"/>
+		<Item Value="4909"/>
+		<Item Value="4755"/>
+		<Item Value="4606"/>
+		<Item Value="4462"/>
+		<Item Value="4324"/>
+		<Item Value="4190"/>
+		<Item Value="4061"/>
+		<Item Value="3937"/>
+		<Item Value="3817"/>
+		<Item Value="3701"/>
+		<Item Value="3589"/>
+		<Item Value="3481"/>
+		<Item Value="3377"/>	
+	</RNTC>
+  </NTC_Device> 
+  
+  <NTC_Device Name="3950 100K">
+    <!--Value表示電阻值,單位K,Precision表示精度-->
+    <R25 Value="100K" Precision="1" />
+    <!--Value表示β值,Precision表示精度-->
+    <BetaValue Value="3950" Precision="1"/>
+    <!--溫度範圍-->
+    <TempatureRange Min="0" Max="99" /> 
+	<RNTC>
+		<Item Value="327019"/>
+		<Item Value="310764"/>
+		<Item Value="295412"/>
+		<Item Value="280908"/>
+		<Item Value="267201"/>
+		<Item Value="254242"/>
+		<Item Value="241987"/>
+		<Item Value="230394"/>
+		<Item Value="219422"/>
+		<Item Value="209036"/>
+		<Item Value="199200"/>
+		<Item Value="189884"/>
+		<Item Value="181055"/>
+		<Item Value="172688"/>
+		<Item Value="164754"/>
+		<Item Value="157229"/>
+		<Item Value="150089"/>
+		<Item Value="143314"/>
+		<Item Value="136882"/>
+		<Item Value="130774"/>
+		<Item Value="124973"/>
+		<Item Value="119461"/>
+		<Item Value="114222"/>
+		<Item Value="109241"/>
+		<Item Value="104505"/>
+		<Item Value="100000"/>
+		<Item Value="95713"/>
+		<Item Value="91633"/>
+		<Item Value="87749"/>
+		<Item Value="84050"/>
+		<Item Value="80527"/>
+		<Item Value="77170"/>
+		<Item Value="73971"/>
+		<Item Value="70922"/>
+		<Item Value="68014"/>
+		<Item Value="65241"/>
+		<Item Value="62595"/>
+		<Item Value="60070"/>
+		<Item Value="57661"/>
+		<Item Value="55360"/>
+		<Item Value="53163"/>
+		<Item Value="51065"/>
+		<Item Value="49060"/>
+		<Item Value="47144"/>
+		<Item Value="45313"/>
+		<Item Value="43562"/>
+		<Item Value="41887"/>
+		<Item Value="40286"/>
+		<Item Value="38753"/>
+		<Item Value="37287"/>
+		<Item Value="35884"/>
+		<Item Value="34540"/>
+		<Item Value="33253"/>
+		<Item Value="32021"/>
+		<Item Value="30840"/>
+		<Item Value="29709"/>
+		<Item Value="28625"/>
+		<Item Value="27586"/>
+		<Item Value="26589"/>
+		<Item Value="25633"/>
+		<Item Value="24717"/>
+		<Item Value="23837"/>
+		<Item Value="22993"/>
+		<Item Value="22183"/>
+		<Item Value="21406"/>
+		<Item Value="20659"/>
+		<Item Value="19942"/>
+		<Item Value="19253"/>
+		<Item Value="18592"/>
+		<Item Value="17956"/>
+		<Item Value="17345"/>
+		<Item Value="16757"/>
+		<Item Value="16193"/>
+		<Item Value="15649"/>
+		<Item Value="15127"/>
+		<Item Value="14625"/>
+		<Item Value="14141"/>
+		<Item Value="13676"/>
+		<Item Value="13228"/>
+		<Item Value="12797"/>
+		<Item Value="12382"/>
+		<Item Value="11982"/>
+		<Item Value="11597"/>
+		<Item Value="11227"/>
+		<Item Value="10869"/>
+		<Item Value="10525"/>
+		<Item Value="10193"/>
+		<Item Value="9873"/>
+		<Item Value="9565"/>
+		<Item Value="9267"/>
+		<Item Value="8980"/>
+		<Item Value="8704"/>
+		<Item Value="8437"/>
+		<Item Value="8179"/>
+		<Item Value="7931"/>
+		<Item Value="7691"/>
+		<Item Value="7459"/>
+		<Item Value="7236"/>
+		<Item Value="7020"/>
+		<Item Value="6811"/>	
+	</RNTC>
+  </NTC_Device> 
+  
+</NTC_Devices>

@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "reg52.h": "c",
+        "i2c.h": "c",
+        "delay.h": "c",
+        "intrins.h": "c"
+    }
+}
