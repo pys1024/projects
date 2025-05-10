@@ -15,6 +15,7 @@
 #include <ESPAsyncWebServer.h>
 #include <ElegantOTA.h>
 #include <ArduinoJson.h>
+#include <Ticker.h>
 
 #define WORK_MODE_SHUT 0
 #define WORK_MODE_PUMP 1
@@ -68,6 +69,11 @@ uint16_t tds_ch2 = 0;
 uint16_t temp_ch1 = 0;
 uint16_t temp_ch2 = 0;
 uint8_t work_mode = WORK_MODE_SHUT;
+
+void task_pump();
+void task_upload_info();
+Ticker ticker1(task_pump, 10, 0, MILLIS);
+Ticker ticker2(task_upload_info, 1000, 0, MILLIS);
 
 void onOTAStart() {
   // Log when OTA has started
@@ -175,82 +181,56 @@ uint8_t gpio_ex_set(uint8_t addr, uint8_t value) {
   return Wire.endTransmission();
 }
 
-void setup() {
-  Serial.begin(9600);
+void switch_work_mode(uint8_t mode) {
+  if (work_mode != mode) {
+    work_mode = mode;
 
-  Wire.begin();
-  Wire.setClock(5000); // max frequency is 5kHz
+    switch (mode) {
+    case WORK_MODE_SHUT:
+      gpio_ex_set(PUMP, 0);
 
-  pinMode(FLOW_DETECT, INPUT);
+      gpio_ex_set(VALVE1, 0);
+      gpio_ex_set(VALVE2, 0);
+      gpio_ex_set(VALVE3, 0);
+      gpio_ex_set(VALVE4, 0);
+      gpio_ex_set(VALVE5, 0);
+      gpio_ex_set(VALVE6, 0);
+    break;
 
-  Serial.println("\nDevice(" DEV_NAME ") is starting...");
-  WiFi.begin(WIFI_SSID, WIFI_PASS);
+    case WORK_MODE_IDLE:
+      gpio_ex_set(PUMP, 0);
 
-  // Note: Local domain names (e.g. "Computer.local" on OSX) are not supported
-  // by Arduino. You need to set the IP address directly.
-  client.begin(MQTT_HOST, MQTT_PORT, net);
-  client.setWill(TOPIC_AVAILABLE, UNAVAILABLE, true, 1);
-  client.onMessage(messageReceived);
+      gpio_ex_set(VALVE1, 0);
+      gpio_ex_set(VALVE2, 0);
+      gpio_ex_set(VALVE3, 0);
+      gpio_ex_set(VALVE4, 0);
+      gpio_ex_set(VALVE5, 0);
+      gpio_ex_set(VALVE6, 1);
+      break;
 
-  gpio_ex_set(PUMP, 0);
-  gpio_ex_set(BEEP, 0);
-  gpio_ex_set(VALVE1, 0);
-  gpio_ex_set(VALVE2, 0);
-  gpio_ex_set(VALVE3, 0);
-  gpio_ex_set(VALVE4, 0);
-  gpio_ex_set(VALVE5, 0);
-  gpio_ex_set(VALVE6, 0);
-  
-  connect(CLIENT_CONNECT_MAX_RETRY_TIMES);
+    case WORK_MODE_PUMP:
+      gpio_ex_set(PUMP, 1);
 
-#if (DEBUG_MODE == 0)
-  Serial.swap();
-#endif
+      gpio_ex_set(VALVE1, 1);
+      gpio_ex_set(VALVE2, 0);
+      gpio_ex_set(VALVE3, 1);
+      gpio_ex_set(VALVE4, 0);
+      gpio_ex_set(VALVE5, 1);
+      gpio_ex_set(VALVE6, 1);
+      break;
+    }
+  }
 }
 
-void loop() {
-  ElegantOTA.loop();
-  if (fw_update) {
-    if (fw_update == 1) {
-      Serial.swap();
-
-      if (!client.connected()) {
-        connect(10);
-      }
-      start_ota();
-      fw_update++;
-    }
-    return;
-  }
-
-  client.loop();
-  delay(10);  // <- fixes some issues with WiFi stability
-
-  loop_cnt++;
-  if (loop_cnt >= 6000) { // 60s
-    loop_cnt = 0;
-    if (!client.connected()) {
-
-      gpio_ex_set(BEEP, 1);
-      delay(1000);
-      gpio_ex_set(BEEP, 0);
-      // turn off pump and try to reconnect
-
-      gpio_ex_set(PUMP, 0);
-      connect(1);
-    }
-  }
-
+void task_upload_info() {
   /* TDS sensor readings */
-  if (loop_cnt % 100 == 0) {
 #if (DEBUG_MODE == 0)
-    if (tds_temp_flag == 0) {
-      tds_temp_flag = 1;
-      Serial.write(&TDS_CMD_GET_DATA_CH1[0], sizeof(TDS_CMD_GET_DATA_CH1));
-    } else {
-      tds_temp_flag = 0;
-      Serial.write(&TDS_CMD_GET_DATA_CH2[0], sizeof(TDS_CMD_GET_DATA_CH2));
-    }
+  if (tds_temp_flag == 0) {
+    tds_temp_flag = 1;
+    Serial.write(&TDS_CMD_GET_DATA_CH1[0], sizeof(TDS_CMD_GET_DATA_CH1));
+  } else {
+    tds_temp_flag = 0;
+    Serial.write(&TDS_CMD_GET_DATA_CH2[0], sizeof(TDS_CMD_GET_DATA_CH2));
   }
 
   if ((uint32_t)Serial.available() >= sizeof(TDS_RSP_BUF)) {
@@ -283,7 +263,9 @@ void loop() {
 #if (DEBUG_MODE == 0)
   }
 #endif
+}
 
+void task_pump() {
   /**
    * SW1: P0.1
    * SW2: P0.2
@@ -307,50 +289,86 @@ void loop() {
 
       // most high priority
       if (value & (0x01 << 1)) { // SW1: low water pressure reached
-        if (work_mode != WORK_MODE_SHUT) {
-          work_mode = WORK_MODE_SHUT;
-
-          gpio_ex_set(PUMP, 0);
-
-          gpio_ex_set(VALVE1, 0);
-          gpio_ex_set(VALVE2, 0);
-          gpio_ex_set(VALVE3, 0);
-          gpio_ex_set(VALVE4, 0);
-          gpio_ex_set(VALVE5, 0);
-          gpio_ex_set(VALVE6, 0);
-        }
+        switch_work_mode(WORK_MODE_SHUT);
+      } else if (value & (0x01 << 3)) { // SW3: high water pressure reached
+        switch_work_mode(WORK_MODE_IDLE);
       } else {
-        // second high priority
-        if (value & (0x01 << 2)) { // SW2: high water pressure reached
-          if (work_mode != WORK_MODE_IDLE) {
-            work_mode = WORK_MODE_IDLE;
-
-            gpio_ex_set(PUMP, 0);
-
-            gpio_ex_set(VALVE1, 0);
-            gpio_ex_set(VALVE2, 0);
-            gpio_ex_set(VALVE3, 0);
-            gpio_ex_set(VALVE4, 0);
-            gpio_ex_set(VALVE5, 0);
-            gpio_ex_set(VALVE6, 0);
-          }
-        } else {
-          if (work_mode != WORK_MODE_PUMP) {
-            work_mode = WORK_MODE_PUMP;
-
-            gpio_ex_set(PUMP, 1);
-
-            gpio_ex_set(VALVE1, 1);
-            gpio_ex_set(VALVE2, 1);
-            gpio_ex_set(VALVE3, 0);
-            gpio_ex_set(VALVE4, 0);
-            gpio_ex_set(VALVE5, 1);
-            gpio_ex_set(VALVE6, 1);
-          }
-        }
+        switch_work_mode(WORK_MODE_PUMP);
       }
-
     }
   }
+}
+
+void setup() {
+  Serial.begin(9600);
+
+  Wire.begin();
+  Wire.setClock(5000); // max frequency is 5kHz
+
+  pinMode(FLOW_DETECT, INPUT);
+
+  Serial.println("\nDevice(" DEV_NAME ") is starting...");
+  WiFi.begin(WIFI_SSID, WIFI_PASS);
+
+  // Note: Local domain names (e.g. "Computer.local" on OSX) are not supported
+  // by Arduino. You need to set the IP address directly.
+  client.begin(MQTT_HOST, MQTT_PORT, net);
+  client.setWill(TOPIC_AVAILABLE, UNAVAILABLE, true, 1);
+  client.onMessage(messageReceived);
+
+  gpio_ex_set(PUMP, 0);
+  gpio_ex_set(BEEP, 0);
+  gpio_ex_set(VALVE1, 0);
+  gpio_ex_set(VALVE2, 0);
+  gpio_ex_set(VALVE3, 0);
+  gpio_ex_set(VALVE4, 0);
+  gpio_ex_set(VALVE5, 0);
+  gpio_ex_set(VALVE6, 0);
+  
+  connect(CLIENT_CONNECT_MAX_RETRY_TIMES);
+
+  ticker1.start();
+  ticker2.start();
+
+#if (DEBUG_MODE == 0)
+  Serial.swap();
+#endif
+}
+
+void loop() {
+  ElegantOTA.loop();
+  if (fw_update) {
+    if (fw_update == 1) {
+      Serial.swap();
+
+      if (!client.connected()) {
+        connect(10);
+      }
+      start_ota();
+      fw_update++;
+    }
+    return;
+  }
+
+  ticker1.update();
+  ticker2.update();
+  client.loop();
+  delay(10);  // <- fixes some issues with WiFi stability
+
+  loop_cnt++;
+  if (loop_cnt >= 6000) { // 60s
+    loop_cnt = 0;
+    if (!client.connected()) {
+
+      gpio_ex_set(BEEP, 1);
+      delay(1000);
+      gpio_ex_set(BEEP, 0);
+      // turn off pump and try to reconnect
+
+      gpio_ex_set(PUMP, 0);
+      connect(1);
+    }
+  }
+
 
 }
