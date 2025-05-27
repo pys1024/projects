@@ -21,6 +21,7 @@
 #define KEY_TDS2              "tds2"
 #define KEY_TEMP1             "temp1"
 #define KEY_TEMP2             "temp2"
+#define KEY_RSSI              "rssi"
 
 #define TOPIC_DEV_IP         "/mqtt/dev/ip/" DEV_NAME
 #define TOPIC_DEV_UPDATE     "/mqtt/dev/update/" DEV_NAME
@@ -79,6 +80,16 @@
         \"suggested_display_precision\": \"1\",\
         \"unit_of_measurement\": \"°C\",\
         \"value_template\": \"{{ value_json.temp2 }}\",\
+        \"retain\": true\
+    },\
+    \"component5\": {\
+        \"p\": \"sensor\",\
+        \"device_class\": \"signal_strength\",\
+        \"unique_id\": \"" DEV_NAME "_rssi\",\
+        \"name\": \"RSSI\",\
+        \"suggested_display_precision\": \"0\",\
+        \"unit_of_measurement\": \"dBm\",\
+        \"value_template\": \"{{ value_json.rssi }}\",\
         \"retain\": true\
     }\
 },\

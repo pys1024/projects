@@ -20,6 +20,8 @@
 #define WORK_MODE_SHUT 0
 #define WORK_MODE_PUMP 1
 #define WORK_MODE_IDLE 2
+#define WORK_MODE_FILTER 3
+#define WORK_MODE_WASH 4
 
 #define GPIO_2_ADDR(port, bit) ((port << 3) | bit)
 #define PORT_2_ADDR(port) ((port + 8) << 3)
@@ -218,6 +220,28 @@ void switch_work_mode(uint8_t mode) {
       gpio_ex_set(VALVE5, 1);
       gpio_ex_set(VALVE6, 1);
       break;
+
+    case WORK_MODE_FILTER:
+      gpio_ex_set(PUMP, 1);
+
+      gpio_ex_set(VALVE1, 1);
+      gpio_ex_set(VALVE2, 1);
+      gpio_ex_set(VALVE3, 0);
+      gpio_ex_set(VALVE4, 0);
+      gpio_ex_set(VALVE5, 1);
+      gpio_ex_set(VALVE6, 1);
+      break;
+
+    case WORK_MODE_WASH:
+      gpio_ex_set(PUMP, 1);
+
+      gpio_ex_set(VALVE1, 1);
+      gpio_ex_set(VALVE2, 1);
+      gpio_ex_set(VALVE3, 0);
+      gpio_ex_set(VALVE4, 1);
+      gpio_ex_set(VALVE5, 1);
+      gpio_ex_set(VALVE6, 1);
+      break;
     }
   }
 }
@@ -237,24 +261,25 @@ void task_upload_info() {
     Serial.readBytes(&TDS_RSP_BUF[0], sizeof(TDS_RSP_BUF));
     if (TDS_RSP_BUF[0] == 0x55 && TDS_RSP_BUF[1] == 0x0A && TDS_RSP_BUF[2] == 0x85) {
 #endif
+      uint8_t ch = TDS_RSP_BUF[3];
+      uint16_t tds = (TDS_RSP_BUF[4] << 8 | TDS_RSP_BUF[5]);
+      uint16_t temp = (TDS_RSP_BUF[6] << 8 | TDS_RSP_BUF[7]);
+
+      if (ch == 1) {
+        tds_ch1 = tds;
+        temp_ch1 = temp;
+      } else if (ch == 2) {
+        tds_ch2 = tds;
+        temp_ch2 = temp;
+      }
+
       if (client.connected()) {
-        uint8_t ch = TDS_RSP_BUF[3];
-        uint16_t tds = (TDS_RSP_BUF[4] << 8 | TDS_RSP_BUF[5]);
-        uint16_t temp = (TDS_RSP_BUF[6] << 8 | TDS_RSP_BUF[7]);
-
-        if (ch == 1) {
-          tds_ch1 = tds;
-          temp_ch1 = temp;
-        } else if (ch == 2) {
-          tds_ch2 = tds;
-          temp_ch2 = temp;
-        }
-
         JsonDocument doc;
-        doc[KEY_TDS1] = tds_ch1/10.0;
-        doc[KEY_TDS2] = tds_ch2/10.0;
+        doc[KEY_TDS1] = tds_ch1/20.0;
+        doc[KEY_TDS2] = tds_ch2/20.0;
         doc[KEY_TEMP1] = temp_ch1/10.0;
         doc[KEY_TEMP2] = temp_ch2/10.0;
+        doc[KEY_RSSI] = WiFi.RSSI();
   
         // Note: the following publish MUST use QoS 0, otherwise the client may be disconnected.
         client.publish(TOPIC_STATE, doc.as<String>(), true, 0);
@@ -292,8 +317,10 @@ void task_pump() {
         switch_work_mode(WORK_MODE_SHUT);
       } else if (value & (0x01 << 3)) { // SW3: high water pressure reached
         switch_work_mode(WORK_MODE_IDLE);
-      } else {
+      } else if (tds_ch1 <= 100) {
         switch_work_mode(WORK_MODE_PUMP);
+      } else {
+        switch_work_mode(WORK_MODE_FILTER);
       }
     }
   }
@@ -360,9 +387,9 @@ void loop() {
     loop_cnt = 0;
     if (!client.connected()) {
 
-      gpio_ex_set(BEEP, 1);
-      delay(1000);
-      gpio_ex_set(BEEP, 0);
+      // gpio_ex_set(BEEP, 1);
+      // delay(1000);
+      // gpio_ex_set(BEEP, 0);
       // turn off pump and try to reconnect
 
       gpio_ex_set(PUMP, 0);
