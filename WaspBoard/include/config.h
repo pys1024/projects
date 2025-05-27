@@ -33,6 +33,7 @@
 #define KEY_BRIGHTNESS        "brightness"
 #define KEY_COLOR_TEMP        "color_temp"
 #define KEY_EFFECT            "effect"
+#define KEY_RSSI              "rssi"
 
 #define TOPIC_DEV_IP         "/mqtt/dev/ip/" DEV_NAME
 #define TOPIC_DEV_UPDATE     "/mqtt/dev/update/" DEV_NAME
@@ -60,6 +61,16 @@
         \"schema\": \"json\",\
         \"brightness\": false,\
         \"supported_color_modes\": [\"rgb\"],\
+        \"retain\": true\
+    },\
+    \"component2\": {\
+        \"p\": \"sensor\",\
+        \"device_class\": \"signal_strength\",\
+        \"unique_id\": \"" DEV_NAME "_rssi\",\
+        \"name\": \"RSSI\",\
+        \"suggested_display_precision\": \"0\",\
+        \"unit_of_measurement\": \"dBm\",\
+        \"value_template\": \"{{ value_json.rssi }}\",\
         \"retain\": true\
     }\
 },\

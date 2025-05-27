@@ -219,6 +219,7 @@ void loop() {
       color["g"] = rgb.substring(rgb.indexOf(',') + 1, rgb.lastIndexOf(','));
       color["b"] = rgb.substring(rgb.lastIndexOf(',') + 1);
       doc[KEY_BRIGHTNESS] = brightness;
+      doc[KEY_RSSI] = WiFi.RSSI();
 
       // Note: the following publish MUST use QoS 0, otherwise the client may be disconnected.
       client.publish(TOPIC_STATE, doc.as<String>(), true, 0);
