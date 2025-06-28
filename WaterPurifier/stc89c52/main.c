@@ -21,10 +21,10 @@ sbit sw3 = P0^1;
 
 
 void init() {
-    // P0 = 0x00;
-    // P1 = 0x00;
-    // P2 = 0x00;
-    // P3 = 0x00;
+    P0 = 0x00;
+    P1 = 0x00;
+    P2 = 0x00;
+    P3 = 0x00;
 }
 
 void uart_init()

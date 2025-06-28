@@ -42,6 +42,9 @@
  * BEEP: P2.5
  * 
  */
+#define SW1 GPIO_2_ADDR(0, 1)
+#define SW2 GPIO_2_ADDR(0, 2)
+#define SW3 GPIO_2_ADDR(0, 3)
 #define VALVE1 GPIO_2_ADDR(1, 6)
 #define VALVE2 GPIO_2_ADDR(1, 5)
 #define VALVE3 GPIO_2_ADDR(1, 4)
@@ -177,6 +180,12 @@ void messageReceived(String &topic, String &payload) {
   }
 }
 
+static inline void publish_log(const char *msg) {
+      if (client.connected()) {
+        client.publish(TOPIC_LOG, msg, true, 1);
+      }
+}
+
 uint8_t gpio_ex_set(uint8_t addr, uint8_t value) {
   Wire.beginTransmission(addr);
   Wire.write(value);
@@ -184,6 +193,7 @@ uint8_t gpio_ex_set(uint8_t addr, uint8_t value) {
 }
 
 void switch_work_mode(uint8_t mode) {
+  // publish_log((String("mode:") + mode).c_str());
   if (work_mode != mode) {
     work_mode = mode;
 
@@ -197,6 +207,8 @@ void switch_work_mode(uint8_t mode) {
       gpio_ex_set(VALVE4, 0);
       gpio_ex_set(VALVE5, 0);
       gpio_ex_set(VALVE6, 0);
+
+      publish_log("Switch to SHUT mode");
     break;
 
     case WORK_MODE_IDLE:
@@ -208,6 +220,8 @@ void switch_work_mode(uint8_t mode) {
       gpio_ex_set(VALVE4, 0);
       gpio_ex_set(VALVE5, 0);
       gpio_ex_set(VALVE6, 1);
+
+      publish_log("Switch to IDLE mode");
       break;
 
     case WORK_MODE_PUMP:
@@ -219,6 +233,8 @@ void switch_work_mode(uint8_t mode) {
       gpio_ex_set(VALVE4, 0);
       gpio_ex_set(VALVE5, 1);
       gpio_ex_set(VALVE6, 1);
+
+      publish_log("Switch to PUMP mode");
       break;
 
     case WORK_MODE_FILTER:
@@ -230,6 +246,8 @@ void switch_work_mode(uint8_t mode) {
       gpio_ex_set(VALVE4, 0);
       gpio_ex_set(VALVE5, 1);
       gpio_ex_set(VALVE6, 1);
+
+      publish_log("Switch to FILTER mode");
       break;
 
     case WORK_MODE_WASH:
@@ -241,6 +259,8 @@ void switch_work_mode(uint8_t mode) {
       gpio_ex_set(VALVE4, 1);
       gpio_ex_set(VALVE5, 1);
       gpio_ex_set(VALVE6, 1);
+
+      publish_log("Switch to WASH mode");
       break;
     }
   }
@@ -323,6 +343,8 @@ void task_pump() {
         switch_work_mode(WORK_MODE_FILTER);
       }
     }
+
+    // publish_log((String("value: ") + value).c_str());
   }
 }
 
@@ -343,14 +365,25 @@ void setup() {
   client.setWill(TOPIC_AVAILABLE, UNAVAILABLE, true, 1);
   client.onMessage(messageReceived);
 
-  gpio_ex_set(PUMP, 0);
-  gpio_ex_set(BEEP, 0);
+  while (gpio_ex_set(PUMP, 0))
+  {
+    Serial.println("Waiting for sub device to ack...");
+    delay(100);
+  }
+  while (gpio_ex_set(BEEP, 0))
+  {
+    Serial.println("Waiting for sub device to ack...");
+    delay(100);
+  }
   gpio_ex_set(VALVE1, 0);
   gpio_ex_set(VALVE2, 0);
   gpio_ex_set(VALVE3, 0);
   gpio_ex_set(VALVE4, 0);
   gpio_ex_set(VALVE5, 0);
   gpio_ex_set(VALVE6, 0);
+  gpio_ex_set(SW1, 1);
+  gpio_ex_set(SW2, 1);
+  gpio_ex_set(SW3, 1);
   
   connect(CLIENT_CONNECT_MAX_RETRY_TIMES);
 
@@ -360,6 +393,8 @@ void setup() {
 #if (DEBUG_MODE == 0)
   Serial.swap();
 #endif
+
+  publish_log("SHUT mode");
 }
 
 void loop() {

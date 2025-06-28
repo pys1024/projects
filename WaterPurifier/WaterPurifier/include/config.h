@@ -26,6 +26,7 @@
 #define TOPIC_DEV_IP         "/mqtt/dev/ip/" DEV_NAME
 #define TOPIC_DEV_UPDATE     "/mqtt/dev/update/" DEV_NAME
 #define TOPIC_AVAILABLE      "/mqtt/sensor/available/" DEV_NAME
+#define TOPIC_LOG            "/mqtt/log/" DEV_NAME
 
 #define TOPIC_WATER_DISC     "homeassistant/device/" DEV_NAME "/config"
 #define PAYLOAD_WATER_DISC "{\

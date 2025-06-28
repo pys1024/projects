@@ -1,4 +1,4 @@
-BL51 BANKED LINKER/LOCATER V6.22.4.0                                                    05/04/2025  11:58:56  PAGE 1
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                    06/28/2025  10:56:23  PAGE 1
 
 
 BL51 BANKED LINKER/LOCATER V6.22.4.0, INVOKED BY:
@@ -42,10 +42,10 @@ LINK MAP OF MODULE:  .\Objects\waterPurifier (?C_STARTUP)
             CODE    0253H     0012H     UNIT         ?C?LIB_CODE
             CODE    0265H     000CH     UNIT         ?C_C51STARTUP
             CODE    0271H     000BH     UNIT         ?PR?I2C_SLAVE_STOP?I2C
-            CODE    027CH     0008H     UNIT         ?PR?_UART_SEND_BYTE?MAIN
-            CODE    0284H     0006H     UNIT         ?PR?UART_RX_ISR?MAIN
-            CODE    028AH     0005H     UNIT         ?PR?I2C_INIT?I2C
-            CODE    028FH     0001H     UNIT         ?PR?INIT?MAIN
+            CODE    027CH     000AH     UNIT         ?PR?INIT?MAIN
+            CODE    0286H     0008H     UNIT         ?PR?_UART_SEND_BYTE?MAIN
+            CODE    028EH     0006H     UNIT         ?PR?UART_RX_ISR?MAIN
+            CODE    0294H     0005H     UNIT         ?PR?I2C_INIT?I2C
 
 
 
@@ -59,7 +59,7 @@ SEGMENT                            DATA_GROUP
   +--> ?PR?MAIN?MAIN
 
 ?PR?MAIN?MAIN                    0008H    0002H
-BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  05/04/2025  11:58:56  PAGE 2
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  06/28/2025  10:56:23  PAGE 2
 
 
   +--> ?PR?INIT?MAIN
@@ -119,7 +119,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\waterPurifier (?C_STARTUP)
   -------         ENDMOD        ?C_STARTUP
 
   -------         MODULE        MAIN
-BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  05/04/2025  11:58:56  PAGE 3
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  06/28/2025  10:56:23  PAGE 3
 
 
   C:0000H         SYMBOL        _ICE_DUMMY_
@@ -139,8 +139,8 @@ SYMBOL TABLE OF MODULE:  .\Objects\waterPurifier (?C_STARTUP)
   D:0098H         PUBLIC        SCON
   D:0089H         PUBLIC        TMOD
   D:0088H         PUBLIC        TCON
-  C:028FH         PUBLIC        init
-  C:0284H         PUBLIC        uart_rx_isr
+  C:027CH         PUBLIC        init
+  C:028EH         PUBLIC        uart_rx_isr
   C:0026H         PUBLIC        _gpio_write
   D:008DH         PUBLIC        TH1
   B:0098H.7       PUBLIC        SM0
@@ -148,13 +148,17 @@ SYMBOL TABLE OF MODULE:  .\Objects\waterPurifier (?C_STARTUP)
   D:008BH         PUBLIC        TL1
   C:023DH         PUBLIC        uart_init
   B:0088H.6       PUBLIC        TR1
-  C:027CH         PUBLIC        _uart_send_byte
+  C:0286H         PUBLIC        _uart_send_byte
   B:0098H.4       PUBLIC        REN
   D:00C8H         PUBLIC        T2CON
   D:00D0H         PUBLIC        PSW
   -------         PROC          INIT
-  C:028FH         LINE#         23
-  C:028FH         LINE#         28
+  C:027CH         LINE#         23
+  C:027CH         LINE#         24
+  C:027FH         LINE#         25
+  C:0281H         LINE#         26
+  C:0283H         LINE#         27
+  C:0285H         LINE#         28
   -------         ENDPROC       INIT
   -------         PROC          UART_INIT
   C:023DH         LINE#         30
@@ -172,16 +176,16 @@ SYMBOL TABLE OF MODULE:  .\Objects\waterPurifier (?C_STARTUP)
   -------         ENDPROC       UART_INIT
   -------         PROC          _UART_SEND_BYTE
   D:0007H         SYMBOL        byte
-  C:027CH         LINE#         45
-  C:027CH         LINE#         46
-  C:027CH         LINE#         47
-  C:027EH         LINE#         48
-  C:0281H         LINE#         49
-  C:0283H         LINE#         50
+  C:0286H         LINE#         45
+  C:0286H         LINE#         46
+  C:0286H         LINE#         47
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  06/28/2025  10:56:23  PAGE 4
+
+
+  C:0288H         LINE#         48
+  C:028BH         LINE#         49
+  C:028DH         LINE#         50
   -------         ENDPROC       _UART_SEND_BYTE
-BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  05/04/2025  11:58:56  PAGE 4
-
-
   -------         PROC          _GPIO_WRITE
   D:0007H         SYMBOL        _port
   D:0005H         SYMBOL        _bit
@@ -235,13 +239,13 @@ SYMBOL TABLE OF MODULE:  .\Objects\waterPurifier (?C_STARTUP)
   C:0134H         LINE#         97
   C:0134H         LINE#         98
   C:0137H         LINE#         99
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  06/28/2025  10:56:23  PAGE 5
+
+
   C:0137H         LINE#         100
   C:013AH         LINE#         101
   C:013AH         LINE#         102
   C:013DH         LINE#         103
-BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  05/04/2025  11:58:56  PAGE 5
-
-
   C:013DH         LINE#         104
   C:0140H         LINE#         105
   C:0140H         LINE#         106
@@ -274,12 +278,12 @@ SYMBOL TABLE OF MODULE:  .\Objects\waterPurifier (?C_STARTUP)
   C:019DH         LINE#         136
   -------         ENDPROC       MAIN
   -------         PROC          UART_RX_ISR
-  C:0284H         LINE#         139
-  C:0284H         LINE#         141
-  C:0287H         LINE#         142
-  C:0287H         LINE#         143
-  C:0289H         LINE#         144
-  C:0289H         LINE#         145
+  C:028EH         LINE#         139
+  C:028EH         LINE#         141
+  C:0291H         LINE#         142
+  C:0291H         LINE#         143
+  C:0293H         LINE#         144
+  C:0293H         LINE#         145
   -------         ENDPROC       UART_RX_ISR
   -------         ENDMOD        MAIN
 
@@ -295,12 +299,12 @@ SYMBOL TABLE OF MODULE:  .\Objects\waterPurifier (?C_STARTUP)
   C:0003H         LINE#         2
   C:0003H         LINE#         4
   C:000DH         LINE#         5
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  06/28/2025  10:56:23  PAGE 6
+
+
   C:0022H         LINE#         6
   -------         ENDPROC       _DELAY
   -------         ENDMOD        DELAY
-
-BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  05/04/2025  11:58:56  PAGE 6
-
 
   -------         MODULE        I2C
   C:0000H         SYMBOL        _ICE_DUMMY_
@@ -310,7 +314,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\waterPurifier (?C_STARTUP)
   C:019FH         PUBLIC        _i2c_slave_write
   D:00A8H         PUBLIC        IE
   C:01DCH         PUBLIC        _i2c_slave_start
-  C:028AH         PUBLIC        i2c_init
+  C:0294H         PUBLIC        i2c_init
   D:00B8H         PUBLIC        IP
   C:0271H         PUBLIC        i2c_slave_stop
   D:0098H         PUBLIC        SCON
@@ -321,10 +325,10 @@ SYMBOL TABLE OF MODULE:  .\Objects\waterPurifier (?C_STARTUP)
   D:00D0H         PUBLIC        PSW
   C:020DH         PUBLIC        i2c_slave_read
   -------         PROC          I2C_INIT
-  C:028AH         LINE#         7
-  C:028AH         LINE#         8
-  C:028CH         LINE#         9
-  C:028EH         LINE#         10
+  C:0294H         LINE#         7
+  C:0294H         LINE#         8
+  C:0296H         LINE#         9
+  C:0298H         LINE#         10
   -------         ENDPROC       I2C_INIT
   -------         PROC          _I2C_SLAVE_START
   D:000AH         SYMBOL        addr
@@ -355,13 +359,13 @@ SYMBOL TABLE OF MODULE:  .\Objects\waterPurifier (?C_STARTUP)
   D:0007H         SYMBOL        data0
   -------         DO            
   D:0006H         SYMBOL        i
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  06/28/2025  10:56:23  PAGE 7
+
+
   -------         ENDDO         
   C:019FH         LINE#         41
   C:019FH         LINE#         42
   C:01A1H         LINE#         44
-BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  05/04/2025  11:58:56  PAGE 7
-
-
   C:01A1H         LINE#         45
   C:01ABH         LINE#         46
   C:01AFH         LINE#         47
@@ -415,5 +419,8 @@ SYMBOL TABLE OF MODULE:  .\Objects\waterPurifier (?C_STARTUP)
   C:0253H         PUBLIC        ?C?CSTPTR
   -------         ENDMOD        ?C?CSTPTR
 
-Program Size: data=15.0 xdata=0 code=656
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  06/28/2025  10:56:23  PAGE 8
+
+
+Program Size: data=15.0 xdata=0 code=665
 LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)
