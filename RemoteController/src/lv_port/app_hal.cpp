@@ -236,7 +236,7 @@ void hal_setup()
      * ----------------------------------------------------------------
      */
     // lv_example_btn_1();
-    lv_example_scroll_1();
+    // lv_example_scroll_1();
 
     /* Option 3: Or try out a demo. Don't forget to enable the demos in lv_conf.h. E.g. LV_USE_DEMOS_WIDGETS
      * -------------------------------------------------------------------------------------------
@@ -267,5 +267,5 @@ void hal_loop()
 #endif
 #endif // !DIRECT_RENDER_MODE
 
-  delay(5);
+  // delay(5);
 }
