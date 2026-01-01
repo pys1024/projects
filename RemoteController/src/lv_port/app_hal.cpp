@@ -1,4 +1,4 @@
-
+#include "config.h"
 #include "app_hal.h"
 /*Using LVGL with Arduino requires some extra steps:
  *Be sure to read the docs here: https://docs.lvgl.io/master/get-started/platforms/arduino.html  */
@@ -41,25 +41,28 @@
  * Seeeduino XIAO dev board    : CS:  3, DC:  2, RST:  1, BL:  0, SCK:  8, MOSI: 10, MISO:  9
  * Teensy 4.1 dev board        : CS: 39, DC: 41, RST: 40, BL: 22, SCK: 13, MOSI: 11, MISO: 12
  ******************************************************************************/
+#include <SPI.h>
+#include <Wire.h>
 #include <Arduino_GFX_Library.h>
+#include "cst816t.h"          // capacitive touch
 
 // #define GFX_BL DF_GFX_BL // default backlight pin, you may replace DF_GFX_BL to actual backlight pin
-#define GFX_BL 11
+#define GFX_BL LCD_BLK_PIN
 
 /* More dev device declaration: https://github.com/moononournation/Arduino_GFX/wiki/Dev-Device-Declaration */
 #if defined(DISPLAY_DEV_KIT)
-Arduino_GFX *gfx = create_default_Arduino_GFX();
+Arduino_GFX *tft = create_default_Arduino_GFX();
 #else /* !defined(DISPLAY_DEV_KIT) */
 
 /* More data bus class: https://github.com/moononournation/Arduino_GFX/wiki/Data-Bus-Class */
 // Arduino_DataBus *bus = create_default_Arduino_DataBus();
-Arduino_DataBus *bus = new Arduino_ESP32SPI(8 /* DC */, 18 /* CS */, 17 /* SCK */, 16 /* MOSI */, -1 /* MISO */);
+Arduino_DataBus *bus = new Arduino_ESP32SPI(LCD_DC_PIN /* DC */, LCD_CS_PIN /* CS */, LCD_SCK_PIN /* SCK */, LCD_MOSI_PIN /* MOSI */, -1 /* MISO */, FSPI /* HW SPI */);
 
 /* More display class: https://github.com/moononournation/Arduino_GFX/wiki/Display-Class */
-// Arduino_GFX *gfx = new Arduino_ILI9341(bus, DF_GFX_RST, 0 /* rotation */, false /* IPS */);
-Arduino_GFX *gfx = new Arduino_ST7789(
+// Arduino_GFX *tft = new Arduino_ILI9341(bus, DF_GFX_RST, 0 /* rotation */, false /* IPS */);
+Arduino_GFX *tft = new Arduino_ST7789(
     /* data bus instance */ bus,
-    /* reset pin       */ 15,
+    /* reset pin       */ LCD_RST_PIN,
     /* rotation        */ 0,
     /* IPS             */ true,
     /* width           */ 240,
@@ -75,10 +78,7 @@ Arduino_GFX *gfx = new Arduino_ST7789(
  * End of Arduino_GFX setting
  ******************************************************************************/
 
-/*******************************************************************************
- * Please config the touch panel in touch.h
- ******************************************************************************/
-#include "touch.h"
+cst816t *touchpad = new cst816t(Wire1, TP_RST_PIN, TP_INT_PIN);
 
 uint32_t screenWidth;
 uint32_t screenHeight;
@@ -109,8 +109,7 @@ void my_disp_flush(lv_display_t *disp, const lv_area_t *area, uint8_t *px_map)
   uint32_t h = lv_area_get_height(area);
 
   // lv_draw_sw_rgb565_swap(px_map, w * h);
-
-  gfx->draw16bitRGBBitmap(area->x1, area->y1, (uint16_t *)px_map, w, h);
+  tft->draw16bitRGBBitmap(area->x1, area->y1, (uint16_t *)px_map, w, h);
 #endif // #ifndef DIRECT_RENDER_MODE
 
   /*Call it to tell LVGL you are ready*/
@@ -120,25 +119,58 @@ void my_disp_flush(lv_display_t *disp, const lv_area_t *area, uint8_t *px_map)
 /*Read the touchpad*/
 void my_touchpad_read(lv_indev_t *indev, lv_indev_data_t *data)
 {
-  // if (touch_has_signal())
-  // {
-  //   if (touch_touched())
-  //   {
-  //     data->state = LV_INDEV_STATE_PRESSED;
+#if 1
+  static uint32_t tp_x = 0;
+  static uint32_t tp_y = 0;
+  static uint32_t tp_fingers = 0;
+  if (touchpad->available()) {
+    tp_x = touchpad->x;
+    tp_y = touchpad->y;
+    tp_fingers = touchpad->finger_num;
+  }
+  data->point.x = tp_x;
+  data->point.y = tp_y;
+  if (tp_fingers != 0) {
+    data->state = LV_INDEV_STATE_PRESSED;
+  } else {
+    data->state = LV_INDEV_STATE_RELEASED;
+  }
 
-  //     /*Set the coordinates*/
-  //     data->point.x = touch_last_x;
-  //     data->point.y = touch_last_y;
-  //   }
-  //   else if (touch_released())
-  //   {
-  //     data->state = LV_INDEV_STATE_RELEASED;
-  //   }
-  // }
-  // else
-  // {
-  //   data->state = LV_INDEV_STATE_RELEASED;
-  // }
+#else
+  if (touchpad->available()) {
+    tft->setCursor(touchpad->x, touchpad->y);
+    tft->fillScreen(BLACK);
+    switch (touchpad->gesture_id) {
+      case GESTURE_NONE:
+        tft->print("NONE");
+        break;
+      case GESTURE_SWIPE_DOWN:
+        tft->print("SWIPE DOWN");
+        break;
+      case GESTURE_SWIPE_UP:
+        tft->print("SWIPE UP");
+        break;
+      case GESTURE_SWIPE_LEFT:
+        tft->print("SWIPE LEFT");
+        break;
+      case GESTURE_SWIPE_RIGHT:
+        tft->print("SWIPE RIGHT");
+        break;
+      case GESTURE_SINGLE_CLICK:
+        tft->print("SINGLE CLICK");
+        break;
+      case GESTURE_DOUBLE_CLICK:
+        tft->print("DOUBLE CLICK");
+        break;
+      case GESTURE_LONG_PRESS:
+        tft->print("LONG PRESS");
+        break;
+      default:
+        tft->print("?");
+        break;
+    }
+  }
+#endif
 }
 
 void hal_setup()
@@ -147,19 +179,18 @@ void hal_setup()
   DEV_DEVICE_INIT();
 #endif
 
-  // Serial.begin(115200);
-  // Serial.setDebugOutput(true);
-  // while(!Serial);
-  // Serial.println("Arduino_GFX LVGL_Arduino_v9 example ");
-  String LVGL_Arduino = String('V') + lv_version_major() + "." + lv_version_minor() + "." + lv_version_patch();
-  // Serial.println(LVGL_Arduino);
-
   // Init Display
-  if (!gfx->begin())
+  if (!tft->begin())
   {
-    // Serial.println("gfx->begin() failed!");
+    while (1) {
+      delay(10);
+      DBLOG("TFT check failed!");
+    }
+  } else {
+    DBLOG("TFT check OK!");
   }
-  gfx->fillScreen(RGB565_BLACK);
+
+  tft->fillScreen(RGB565_BLACK);
 
 #ifdef GFX_BL
   pinMode(GFX_BL, OUTPUT);
@@ -167,7 +198,10 @@ void hal_setup()
 #endif
 
   // Init touch device
-  // touch_init(gfx->width(), gfx->height(), gfx->getRotation());
+  Wire1.begin(TP_SDA_PIN, TP_SCK_PIN, I2C_SPEED);
+  touchpad->begin(mode_change);
+
+  DBLOG("Touchpad check OK!");
 
   lv_init();
 
@@ -179,8 +213,8 @@ void hal_setup()
   lv_log_register_print_cb(my_print);
 #endif
 
-  screenWidth = gfx->width();
-  screenHeight = gfx->height();
+  screenWidth = tft->width();
+  screenHeight = tft->height();
 
 #ifdef DIRECT_RENDER_MODE
   bufSize = screenWidth * screenHeight;
@@ -190,7 +224,7 @@ void hal_setup()
 
 #ifdef ESP32
 #if defined(DIRECT_RENDER_MODE) && (defined(CANVAS) || defined(RGB_PANEL) || defined(DSI_PANEL))
-  disp_draw_buf = (lv_color_t *)gfx->getFramebuffer();
+  disp_draw_buf = (lv_color_t *)tft->getFramebuffer();
 #else  // !(defined(DIRECT_RENDER_MODE) && (defined(CANVAS) || defined(RGB_PANEL) || defined(DSI_PANEL)))
   disp_draw_buf = (lv_color_t *)heap_caps_malloc(bufSize * 2, MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT);
   if (!disp_draw_buf)
@@ -200,12 +234,12 @@ void hal_setup()
   }
 #endif // !(defined(DIRECT_RENDER_MODE) && (defined(CANVAS) || defined(RGB_PANEL) || defined(DSI_PANEL)))
 #else  // !ESP32
-  Serial.println("LVGL disp_draw_buf heap_caps_malloc failed! malloc again...");
+  DBLOG("LVGL disp_draw_buf heap_caps_malloc failed! malloc again...");
   disp_draw_buf = (lv_color_t *)malloc(bufSize * 2);
 #endif // !ESP32
   if (!disp_draw_buf)
   {
-    // Serial.println("LVGL disp_draw_buf allocate failed!");
+    DBLOG("LVGL disp_draw_buf allocate failed!");
   }
   else
   {
@@ -219,9 +253,9 @@ void hal_setup()
 #endif
 
     /*Initialize the (dummy) input device driver*/
-    // lv_indev_t *indev = lv_indev_create();
-    // lv_indev_set_type(indev, LV_INDEV_TYPE_POINTER); /*Touchpad should have POINTER type*/
-    // lv_indev_set_read_cb(indev, my_touchpad_read);
+    lv_indev_t *indev = lv_indev_create();
+    lv_indev_set_type(indev, LV_INDEV_TYPE_POINTER); /*Touchpad should have POINTER type*/
+    lv_indev_set_read_cb(indev, my_touchpad_read);
 
     /* Option 1: Create a simple label
      * ---------------------
@@ -248,7 +282,7 @@ void hal_setup()
     // lv_demo_stress();
   }
 
-  // Serial.println("Setup done");
+  // DBLOG("Setup done");
 }
 
 void hal_loop()
@@ -257,13 +291,13 @@ void hal_loop()
 
 #ifdef DIRECT_RENDER_MODE
 #if defined(CANVAS) || defined(RGB_PANEL) || defined(DSI_PANEL)
-  gfx->flush();
+  tft->flush();
 #else  // !(defined(CANVAS) || defined(RGB_PANEL) || defined(DSI_PANEL))
-  gfx->draw16bitRGBBitmap(0, 0, (uint16_t *)disp_draw_buf, screenWidth, screenHeight);
+  tft->draw16bitRGBBitmap(0, 0, (uint16_t *)disp_draw_buf, screenWidth, screenHeight);
 #endif // !(defined(CANVAS) || defined(RGB_PANEL) || defined(DSI_PANEL))
 #else  // !DIRECT_RENDER_MODE
 #ifdef CANVAS
-  gfx->flush();
+  tft->flush();
 #endif
 #endif // !DIRECT_RENDER_MODE
 

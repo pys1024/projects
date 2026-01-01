@@ -1,10 +1,21 @@
 #pragma once
 
+#define DEBUG_ENABLE 1
+
+#if DEBUG_ENABLE
+  #define DBLOG(fmt, ...)  Serial.println((fmt), ##__VA_ARGS__)
+#else
+  #define DBLOG(fmt, ...)
+#endif
+
+#define SERIAL_BAUDRATE 115200
+#define SPI_SPEED 100000
+#define I2C_SPEED 400000
 
 // GPIO Configuration
 #define POWER_EN_PIN       12 // GPIO pin to enable power
 #define BAT_DET            1  // GPIO pin for battery detection
-#define KEYX_PIN           41 // GPIO pin for key X
+#define KEY4_PIN           41 // GPIO pin for key X
 
 #define LX_PIN             5 // GPIO pin for joystick left X-axis
 #define LY_PIN             4 // GPIO pin for joystick left Y-axis
@@ -38,13 +49,24 @@
 #define TP_RST_PIN         42 // GPIO pin for touchpanel RST
 
 // MCP23X17 Configuration
-#define SW1_PIN         2 // GPIO pin for a switch input
-#define SW2_PIN         1 // GPIO pin for a switch input
-#define SW3_PIN         0 // GPIO pin for a switch input
+#define KEY1_PIN      2 // GPIO pin for a key input
+#define KEY2_PIN      1 // GPIO pin for a key input
+#define KEY3_PIN      0 // GPIO pin for a key input
 
-#define SW5_PIN         15 // GPIO pin for a switch input
-#define SW6_PIN         14 // GPIO pin for a switch input
-#define SW7_PIN         12 // GPIO pin for a switch input
-#define SW8_PIN         13 // GPIO pin for a switch input
+#define KEY5_PIN      15 // GPIO pin for a key input
+#define KEY6_PIN      14 // GPIO pin for a key input
+#define KEY7_PIN      12 // GPIO pin for a key input
+#define KEY8_PIN      13 // GPIO pin for a key input
 
-#define BEEP_PIN        5 // GPIO pin for beep sound
+#define EC1_SW_PIN    3 // GPIO pin for Encoder 1 switch input
+#define EC2_SW_PIN    11 // GPIO pin for Encoder 2 switch input
+
+#define RC1_SW_PIN    4 // GPIO pin for a rocker switch input
+#define RC2_SW_PIN    8 // GPIO pin for a rocker switch input
+
+#define SW1_PIN       6 // GPIO pin for a switch input
+#define SW2_PIN       7 // GPIO pin for a switch input
+#define SW3_PIN       9 // GPIO pin for a switch input
+#define SW4_PIN       10 // GPIO pin for a switch input
+
+#define BEEP_PIN      5 // GPIO pin for beep sound
