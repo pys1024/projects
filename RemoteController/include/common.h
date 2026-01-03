@@ -6,6 +6,15 @@
 #include <unistd.h>
 #include <sys/types.h>
 
+#ifdef ARDUINO
+#include "Arduino.h"
+#include "SPI.h"
+#include "Wire.h"
+#endif
+
+#include "lvgl.h"
+
+
+#include "app_hal.h"
 #include "config.h"
-#include "lv_port/lv_port_disp.h"
-#include "lv_port/lv_port_indev.h"
+#include "hal_common.h"

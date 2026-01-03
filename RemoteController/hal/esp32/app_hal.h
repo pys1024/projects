@@ -5,6 +5,14 @@
 extern "C" {
 #endif
 
+#include "hal_common.h"
+
+#include "lv_port_disp.h"
+#include "lv_port_indev.h"
+#include "encoder.h"
+#include "mcp23017.h"
+#include "mpu6050.h"
+#include "nrf24.h"
 
 /**
  * This function runs once and typically includes:

@@ -1,6 +1,6 @@
 #pragma once
 
-#define DEBUG_ENABLE 1
+#define DEBUG_ENABLE 0
 
 #if DEBUG_ENABLE
   #define DBLOG(fmt, ...)  Serial.println((fmt), ##__VA_ARGS__)
@@ -8,8 +8,10 @@
   #define DBLOG(fmt, ...)
 #endif
 
+#define LCD_WIDTH 240
+#define LCD_HEIGHT 280
 #define SERIAL_BAUDRATE 115200
-#define SPI_SPEED 100000
+#define SPI_SPEED 10000000
 #define I2C_SPEED 400000
 
 // GPIO Configuration

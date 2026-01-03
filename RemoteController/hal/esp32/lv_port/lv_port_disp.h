@@ -4,8 +4,9 @@
 extern "C" {
 #endif
 
-void lv_port_indev_init();
+bool lv_port_disp_init(void);
+void lv_port_disp_loop(void);
 
 #ifdef __cplusplus
-} /*extern "C"*/
+}
 #endif
