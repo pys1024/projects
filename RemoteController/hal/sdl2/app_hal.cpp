@@ -18,8 +18,10 @@ static lv_indev_t *lvKeyboard;
 #if LV_USE_LOG != 0
 static void lv_log_print_g_cb(lv_log_level_t level, const char * buf)
 {
-  LV_UNUSED(level);
-  LV_UNUSED(buf);
+    LV_UNUSED(level);
+    LV_UNUSED(buf);
+    printf("%s", buf);
+    fflush(stdout);
 }
 #endif
 
@@ -54,7 +56,7 @@ void hal_setup(void)
 void hal_loop(void)
 {
     lv_timer_handler(); // Update the UI-
-    // SDL_Delay(5);
+    SDL_Delay(5);
 }
 
 hal_status_t hal_init_device(uint8_t dev_id, char *msg, uint32_t msg_size)

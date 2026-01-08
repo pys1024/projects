@@ -45,6 +45,14 @@ hal_status_t hal_init_device(uint8_t dev_id, char *msg, uint32_t msg_size)
       snprintf(msg, msg_size, "Touchpad check failed!");
       return HAL_ERROR;
 
+    case 5:
+      if (hal_joystick_and_bat_init()) {
+        snprintf(msg, msg_size, "Joystick and Battery check OK!");
+        return HAL_OK;
+      }
+      snprintf(msg, msg_size, "Joystick and Battery check failed!");
+      return HAL_ERROR;
+
     default:
       return HAL_NO_MORE_DEVICES;
   }
@@ -55,20 +63,7 @@ void hal_setup()
   // GPIO Initialization
   pinMode(POWER_EN_PIN, OUTPUT); // Set POWER_EN_PIN as output
   pinMode(LCD_BLK_PIN, OUTPUT); // Set LCD_BLK_PIN as output
-
   pinMode(KEY4_PIN, INPUT); // Set KEY4_PIN as input
-  pinMode(BAT_DET, INPUT); // Set BAT_DET as input
-
-  pinMode(LX_PIN, INPUT); // Set LX_PIN as input
-  pinMode(LY_PIN, INPUT); // Set LY_PIN as input
-  pinMode(RX_PIN, INPUT); // Set RX_PIN as input
-  pinMode(RY_PIN, INPUT); // Set RY_PIN as input
-
-  analogSetPinAttenuation(LX_PIN, ADC_11db); // Set LX_PIN attenuation to 11db
-  analogSetPinAttenuation(LY_PIN, ADC_11db); // Set LY_PIN attenuation to 11db
-  analogSetPinAttenuation(RX_PIN, ADC_11db); // Set RX_PIN attenuation to 11db
-  analogSetPinAttenuation(RY_PIN, ADC_11db); // Set RY_PIN attenuation to 11db
-  analogSetPinAttenuation(BAT_DET, ADC_11db); // Set BAT_DET attenuation to 11db
 
   digitalWrite(POWER_EN_PIN, HIGH); // Turn on the device
 

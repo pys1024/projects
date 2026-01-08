@@ -3,7 +3,7 @@
 
 void hal_check()
 {
-  char msg[128];
+  char msg[200];
   lv_obj_t *screen = lv_obj_create(NULL); // Create a new screen object
   lv_obj_set_style_bg_color(screen, lv_color_black(), LV_PART_MAIN);
   lv_obj_set_flex_flow(screen, LV_FLEX_FLOW_COLUMN);

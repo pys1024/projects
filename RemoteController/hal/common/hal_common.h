@@ -6,6 +6,15 @@ extern "C" {
 
 #include <stdint.h>
 
+#define MY_INDEV_TYPE_JOYSTICK1 ((lv_indev_type_t)0x10)
+#define MY_INDEV_TYPE_JOYSTICK2 ((lv_indev_type_t)0x11)
+#define MY_INDEV_TYPE_BATTERY ((lv_indev_type_t)0x12)
+#define MY_INDEV_TYPE_BUTTON ((lv_indev_type_t)0x13)
+#define MY_INDEV_TYPE_ENCODER1 ((lv_indev_type_t)0x14)
+#define MY_INDEV_TYPE_ENCODER2 ((lv_indev_type_t)0x15)
+// #define MY_INDEV_TYPE_ACCEL ((lv_indev_type_t)0x13)
+// #define MY_INDEV_TYPE_GYRO ((lv_indev_type_t)0x14)
+
 typedef enum {
     HAL_OK,
     HAL_ERROR,

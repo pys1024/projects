@@ -13,6 +13,7 @@ extern "C" {
 #include "mcp23017.h"
 #include "mpu6050.h"
 #include "nrf24.h"
+#include "joystick_and_bat.h"
 
 /**
  * This function runs once and typically includes:
