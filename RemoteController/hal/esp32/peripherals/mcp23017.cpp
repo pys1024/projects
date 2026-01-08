@@ -26,7 +26,7 @@ static void mcp_read_cb(lv_indev_t * indev, lv_indev_data_t * data)
   key_val |= mcp->digitalRead(SW3_PIN) ? 0 : (1 << 14);
   key_val |= mcp->digitalRead(SW4_PIN) ? 0 : (1 << 15);
 
-  key_val = key_val ^ 0x0123; // invert key value
+  key_val = key_val ^ 0xF100; // invert key value
 
   data->key = key_val;
   data->state = (key_val != last_key_val) ? LV_INDEV_STATE_PRESSED : LV_INDEV_STATE_RELEASED;

@@ -13,3 +13,14 @@ lv_indev_t *find_indev_by_type(lv_indev_type_t type)
     }
   }
 }
+
+int64_t my_map(int64_t x, int64_t in_min, int64_t in_max, int64_t out_min, int64_t out_max) {
+    const int64_t run = in_max - in_min;
+    if(run == 0){
+        LV_LOG_ERROR("%s: Invalid input range, min == max", __func__);
+        return 0;
+    }
+    const int64_t rise = out_max - out_min;
+    const int64_t delta = x - in_min;
+    return (delta * rise) / run + out_min;
+}

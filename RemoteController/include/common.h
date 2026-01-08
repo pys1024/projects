@@ -17,7 +17,7 @@
 
 #include "lvgl.h"
 
-
+#include "lv_tools.h"
 #include "app_hal.h"
 #include "config.h"
 #include "hal_common.h"

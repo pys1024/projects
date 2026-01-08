@@ -12,8 +12,8 @@ static void joystick1_read_cb(lv_indev_t *indev, lv_indev_data_t *data)
   uint16_t ly = analogRead(LY_PIN);
 
   // Map the analog values to joystick coordinates
-  int16_t x = lx >= static_lx_val ? map(lx, static_lx_val, 4095, 0, 100) : map(lx, 0, static_lx_val, -100, 0);
-  int16_t y = ly >= static_ly_val ? map(ly, static_ly_val, 4095, 0, 100) : map(ly, 0, static_ly_val, -100, 0);
+  int16_t x = lx >= static_lx_val ? my_map(lx, static_lx_val, 4095, 0, 100) : my_map(lx, 0, static_lx_val, -100, 0);
+  int16_t y = ly >= static_ly_val ? my_map(ly, static_ly_val, 4095, 0, 100) : my_map(ly, 0, static_ly_val, -100, 0);
 
   // Set the data structure
   data->point.x = x;
@@ -29,8 +29,8 @@ static void joystick2_read_cb(lv_indev_t *indev, lv_indev_data_t *data)
   uint16_t ry = analogRead(RY_PIN);
 
   // Map the analog values to joystick coordinates
-  int16_t x = rx >= static_rx_val ? map(rx, static_rx_val, 4095, 0, 100) : map(rx, 0, static_rx_val, -100, 0);
-  int16_t y = ry >= static_ry_val ? map(ry, static_ry_val, 4095, 0, 100) : map(ry, 0, static_ry_val, -100, 0);
+  int16_t x = rx >= static_rx_val ? my_map(rx, static_rx_val, 4095, 0, 100) : my_map(rx, 0, static_rx_val, -100, 0);
+  int16_t y = ry >= static_ry_val ? my_map(ry, static_ry_val, 4095, 0, 100) : my_map(ry, 0, static_ry_val, -100, 0);
 
   // Set the data structure
   data->point.x = x;

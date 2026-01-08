@@ -42,6 +42,9 @@ static void encoder_read_cb(lv_indev_t *indev, lv_indev_data_t *data)
 {
   ESP_Knob *knob = (ESP_Knob *)lv_indev_get_driver_data(indev);
   int16_t count = knob->getCountValue();
+
+  count /= 2;
+
   if (count != 0) {
     knob->clearCountValue();
   }

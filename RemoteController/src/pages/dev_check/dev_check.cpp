@@ -24,6 +24,7 @@
 
 #define JOYSTICK_BASE_RADIUS  (50)
 #define JOYSTICK_STICK_RADIUS (8)
+#define JOYSTICK_BOUNDARY (JOYSTICK_BASE_RADIUS - (JOYSTICK_STICK_RADIUS * 1.2))
 
 #define JOYSTICK_OFFSET_X (70)
 #define JOYSTICK_OFFSET_Y (-15)
@@ -96,6 +97,11 @@ static lv_obj_t *create_joystick(lv_obj_t *parent, lv_coord_t x, lv_coord_t y)
   lv_obj_set_style_bg_color(stick, lv_color_make(50, 100, 200), LV_PART_MAIN);
   lv_obj_set_style_border_width(stick, 0, LV_PART_MAIN);
   lv_obj_set_style_pad_all(stick, 0, LV_PART_MAIN);
+
+  lv_obj_t *label = lv_label_create(base);
+  lv_label_set_text(label, "0,0");
+  lv_obj_set_style_text_color(label, lv_color_white(), LV_PART_MAIN);
+  lv_obj_center(label);
 
   return base;
 }
@@ -173,6 +179,7 @@ static void timer_cb(lv_timer_t *timer)
   lv_indev_t *indev_battery = find_indev_by_type(MY_INDEV_TYPE_BATTERY);
 
   lv_obj_t *obj = NULL;
+  lv_obj_t *child = NULL;
   lv_indev_data_t data;
 
   if (indev_btn) {
@@ -204,6 +211,7 @@ static void timer_cb(lv_timer_t *timer)
         int32_t value = lv_arc_get_value(obj) + data.enc_diff;
         value = value < 0 ? 0 : value > 360 ? 360 : value;
         lv_arc_set_value(obj, value);
+        lv_obj_send_event(obj, LV_EVENT_VALUE_CHANGED, NULL);
       }
     }
   }
@@ -217,6 +225,7 @@ static void timer_cb(lv_timer_t *timer)
         int32_t value = lv_arc_get_value(obj) + data.enc_diff;
         value = value < 0 ? 0 : value > 360 ? 360 : value;
         lv_arc_set_value(obj, value);
+        lv_obj_send_event(obj, LV_EVENT_VALUE_CHANGED, NULL);
       }
     }
   }
@@ -224,17 +233,22 @@ static void timer_cb(lv_timer_t *timer)
   if (indev_joystick1) {
     lv_indev_get_read_cb(indev_joystick1)(indev_joystick1, &data);
 
-    obj = lv_obj_find_by_name(screen, CO_NAME(j1));
+    obj = lv_obj_find_by_name(screen, CO_NAME(j1)); // joystick
     if (obj) {
-      obj = lv_obj_find_by_name(screen, "stick");
+      child = lv_obj_get_child_by_type(obj, 0, &lv_label_class); // label
+      obj = lv_obj_find_by_name(obj, "stick"); // stick
       if (obj) {
-        int32_t x = lv_obj_get_x_aligned(obj) + map(data.point.x,
-          -data.timestamp, data.timestamp,
-          -(JOYSTICK_BASE_RADIUS - JOYSTICK_STICK_RADIUS), (JOYSTICK_BASE_RADIUS - JOYSTICK_STICK_RADIUS));
-        int32_t y = lv_obj_get_y_aligned(obj) + map(data.point.y,
-          -data.timestamp, data.timestamp,
-          -(JOYSTICK_BASE_RADIUS - JOYSTICK_STICK_RADIUS), (JOYSTICK_BASE_RADIUS - JOYSTICK_STICK_RADIUS));
-        lv_obj_set_pos(obj, x, y);
+        int32_t x = my_map(data.point.x, -100, 100, -JOYSTICK_BOUNDARY, JOYSTICK_BOUNDARY);
+        int32_t y = -my_map(data.point.y, -100, 100, -JOYSTICK_BOUNDARY, JOYSTICK_BOUNDARY);
+
+        float distance_from_center = sqrt(x * x + y * y);
+        if (distance_from_center < JOYSTICK_BOUNDARY) {
+          lv_obj_set_pos(obj, x, y);
+        }
+
+        if (child) {
+          lv_label_set_text_fmt(child, "%d,%d", data.point.x, data.point.y);
+        }
       }
     }
   }
@@ -242,17 +256,22 @@ static void timer_cb(lv_timer_t *timer)
   if (indev_joystick2) {
     lv_indev_get_read_cb(indev_joystick2)(indev_joystick2, &data);
 
-    obj = lv_obj_find_by_name(screen, CO_NAME(j2));
+    obj = lv_obj_find_by_name(screen, CO_NAME(j2)); // joystick
     if (obj) {
-      obj = lv_obj_find_by_name(screen, "stick");
+      child = lv_obj_get_child_by_type(obj, 0, &lv_label_class); // label
+      obj = lv_obj_find_by_name(obj, "stick"); // stick
       if (obj) {
-        int32_t x = lv_obj_get_x_aligned(obj) + map(data.point.x,
-          -data.timestamp, data.timestamp,
-          -(JOYSTICK_BASE_RADIUS - JOYSTICK_STICK_RADIUS), (JOYSTICK_BASE_RADIUS - JOYSTICK_STICK_RADIUS));
-        int32_t y = lv_obj_get_y_aligned(obj) + map(data.point.y,
-          -data.timestamp, data.timestamp,
-          -(JOYSTICK_BASE_RADIUS - JOYSTICK_STICK_RADIUS), (JOYSTICK_BASE_RADIUS - JOYSTICK_STICK_RADIUS));
-        lv_obj_set_pos(obj, x, y);
+        int32_t x = my_map(data.point.x, -100, 100, -JOYSTICK_BOUNDARY, JOYSTICK_BOUNDARY);
+        int32_t y = -my_map(data.point.y, -100, 100, -JOYSTICK_BOUNDARY, JOYSTICK_BOUNDARY);
+
+        float distance_from_center = sqrt(x * x + y * y);
+        if (distance_from_center < JOYSTICK_BOUNDARY) {
+          lv_obj_set_pos(obj, x, y);
+        }
+
+        if (child) {
+          lv_label_set_text_fmt(child, "%d,%d", data.point.x, data.point.y);
+        }
       }
     }
   }
