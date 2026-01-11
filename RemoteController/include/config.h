@@ -61,10 +61,10 @@
 #define KEY8_PIN      13 // GPIO pin for a key input
 
 #define EC1_SW_PIN    3 // GPIO pin for Encoder 1 switch input
-#define EC2_SW_PIN    11 // GPIO pin for Encoder 2 switch input
+#define EC2_SW_PIN    8 // GPIO pin for Encoder 2 switch input
 
 #define RC1_SW_PIN    4 // GPIO pin for a rocker switch input
-#define RC2_SW_PIN    8 // GPIO pin for a rocker switch input
+#define RC2_SW_PIN    11 // GPIO pin for a rocker switch input
 
 #define SW1_PIN       6 // GPIO pin for a switch input
 #define SW2_PIN       7 // GPIO pin for a switch input

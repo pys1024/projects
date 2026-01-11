@@ -24,7 +24,7 @@
 
 #define JOYSTICK_BASE_RADIUS  (50)
 #define JOYSTICK_STICK_RADIUS (8)
-#define JOYSTICK_BOUNDARY (JOYSTICK_BASE_RADIUS - (JOYSTICK_STICK_RADIUS * 1.2))
+#define JOYSTICK_BOUNDARY (JOYSTICK_BASE_RADIUS - (JOYSTICK_STICK_RADIUS * 1.0))
 
 #define JOYSTICK_OFFSET_X (70)
 #define JOYSTICK_OFFSET_Y (-15)
@@ -33,7 +33,7 @@
   obj = lv_obj_find_by_name(screen, CO_NAME(KEY)); \
   if (obj)                                         \
   {                                                \
-    if (data.key & (1 << BIT))                            \
+    if (data.key & (1 << BIT))                     \
     {                                              \
       lv_obj_add_state(obj, LV_STATE_PRESSED);     \
     }                                              \
@@ -61,6 +61,10 @@ static lv_timer_t *timer = NULL;
 
 static lv_obj_t *create_joystick(lv_obj_t *parent, lv_coord_t x, lv_coord_t y)
 {
+  static lv_style_t style_stick_pressed;
+  lv_style_init(&style_stick_pressed);
+  lv_style_set_bg_color(&style_stick_pressed, lv_palette_darken(LV_PALETTE_RED, 2));
+
   lv_obj_t *base = lv_obj_create(parent);
   lv_obj_set_size(base, JOYSTICK_BASE_RADIUS * 2, JOYSTICK_BASE_RADIUS * 2);
   lv_obj_align(base, LV_ALIGN_CENTER, x, y);
@@ -97,6 +101,7 @@ static lv_obj_t *create_joystick(lv_obj_t *parent, lv_coord_t x, lv_coord_t y)
   lv_obj_set_style_bg_color(stick, lv_color_make(50, 100, 200), LV_PART_MAIN);
   lv_obj_set_style_border_width(stick, 0, LV_PART_MAIN);
   lv_obj_set_style_pad_all(stick, 0, LV_PART_MAIN);
+  lv_obj_add_style(stick, &style_stick_pressed, LV_STATE_PRESSED);
 
   lv_obj_t *label = lv_label_create(base);
   lv_label_set_text(label, "0,0");
@@ -199,6 +204,54 @@ static void timer_cb(lv_timer_t *timer)
       UPDATE_SWITCH_STATE(2, 13);
       UPDATE_SWITCH_STATE(3, 14);
       UPDATE_SWITCH_STATE(4, 15);
+
+      obj = lv_obj_find_by_name(screen, CO_NAME(j1)); // joystick
+      if (obj) {
+        obj = lv_obj_find_by_name(obj, "stick"); // stick
+        if (obj) {
+          if (data.key & (1 << 10)) {
+            lv_obj_add_state(obj, LV_STATE_PRESSED);
+          } else {
+            lv_obj_remove_state(obj, LV_STATE_PRESSED);
+          }
+        }
+      }
+
+      obj = lv_obj_find_by_name(screen, CO_NAME(j2)); // joystick
+      if (obj) {
+        obj = lv_obj_find_by_name(obj, "stick"); // stick
+        if (obj) {
+          if (data.key & (1 << 11)) {
+            lv_obj_add_state(obj, LV_STATE_PRESSED);
+          } else {
+            lv_obj_remove_state(obj, LV_STATE_PRESSED);
+          }
+        }
+      }
+
+      obj = lv_obj_find_by_name(screen, CO_NAME(z)); // arc
+      if (obj) {
+        obj = lv_obj_get_child_by_type(obj, 0, &lv_label_class); // label
+        if (obj) {
+          if (data.key & (1 << 8)) {
+            lv_obj_set_style_text_color(obj, lv_color_make(200, 0, 0), 0);
+          } else {
+            lv_obj_set_style_text_color(obj, lv_color_white(), 0);
+          }
+        }
+      }
+
+      obj = lv_obj_find_by_name(screen, CO_NAME(x)); // arc
+      if (obj) {
+        obj = lv_obj_get_child_by_type(obj, 0, &lv_label_class); // label
+        if (obj) {
+          if (data.key & (1 << 9)) {
+            lv_obj_set_style_text_color(obj, lv_color_make(200, 0, 0), 0);
+          } else {
+            lv_obj_set_style_text_color(obj, lv_color_white(), 0);
+          }
+        }
+      }
     }
   }
 
@@ -276,6 +329,14 @@ static void timer_cb(lv_timer_t *timer)
     }
   }
 
+  if (indev_battery) {
+    lv_indev_get_read_cb(indev_battery)(indev_battery, &data);
+
+    obj = lv_obj_find_by_name(screen, CO_NAME(bat)); // battery label
+    if (obj) {
+      lv_label_set_text_fmt(obj, "%d.%03dV", data.key / 1000, data.key % 1000);
+    }
+  }
 
 }
 
@@ -332,6 +393,10 @@ lv_obj_t *dev_check(void)
   lv_obj_send_event(arc1, LV_EVENT_VALUE_CHANGED, NULL);
   lv_obj_send_event(arc2, LV_EVENT_VALUE_CHANGED, NULL);
 
+  static lv_style_t style_btn_pressed;
+  lv_style_init(&style_btn_pressed);
+  lv_style_set_bg_color(&style_btn_pressed, lv_palette_darken(LV_PALETTE_RED, 2));
+
   lv_obj_t *key1 = lv_button_create(screen);
   lv_obj_t *key2 = lv_button_create(screen);
   lv_obj_t *key3 = lv_button_create(screen);
@@ -356,6 +421,14 @@ lv_obj_t *dev_check(void)
   lv_obj_set_size(key6, KEY_WIDTH, KEY_HEIGHT);
   lv_obj_set_size(key7, KEY_WIDTH, KEY_HEIGHT);
   lv_obj_set_size(key8, KEY_WIDTH, KEY_HEIGHT);
+  lv_obj_add_style(key1, &style_btn_pressed, LV_STATE_PRESSED);
+  lv_obj_add_style(key2, &style_btn_pressed, LV_STATE_PRESSED);
+  lv_obj_add_style(key3, &style_btn_pressed, LV_STATE_PRESSED);
+  lv_obj_add_style(key4, &style_btn_pressed, LV_STATE_PRESSED);
+  lv_obj_add_style(key5, &style_btn_pressed, LV_STATE_PRESSED);
+  lv_obj_add_style(key6, &style_btn_pressed, LV_STATE_PRESSED);
+  lv_obj_add_style(key7, &style_btn_pressed, LV_STATE_PRESSED);
+  lv_obj_add_style(key8, &style_btn_pressed, LV_STATE_PRESSED);
 
   lv_obj_align(sw1, LV_ALIGN_CENTER, -SWITCH_OFFSET_X, -SWITCH_OFFSET_Y);
   lv_obj_align(sw2, LV_ALIGN_CENTER, -SWITCH_OFFSET_X + SWITCH_WIDTH + SWITCH_GAP_X, -SWITCH_OFFSET_Y);
@@ -379,6 +452,12 @@ lv_obj_t *dev_check(void)
   lv_obj_t *joystick2 = create_joystick(screen, JOYSTICK_OFFSET_X, JOYSTICK_OFFSET_Y);
   lv_obj_set_name(joystick1, CO_NAME(j1));
   lv_obj_set_name(joystick2, CO_NAME(j2));
+
+  lv_obj_t *label_bat = lv_label_create(screen);
+  lv_obj_set_name(label_bat, CO_NAME(bat));
+  lv_label_set_text(label_bat, "4.200V");
+  lv_obj_align(label_bat, LV_ALIGN_BOTTOM_MID, 0, 0);
+  lv_obj_set_style_text_color(label_bat, lv_color_white(), LV_PART_MAIN);
 
 
   /* --------------------------------------------------------------------------------------------------------------- */

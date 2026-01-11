@@ -43,7 +43,7 @@ static void joystick2_read_cb(lv_indev_t *indev, lv_indev_data_t *data)
 
 static void bat_read_cb(lv_indev_t *indev, lv_indev_data_t *data)
 {
-  uint32_t bat_val = analogReadMilliVolts(BAT_DET);
+  uint32_t bat_val = analogReadMilliVolts(BAT_DET) * 2;
   data->key = bat_val;
   data->state = (bat_val > 3700) ? LV_INDEV_STATE_PRESSED : LV_INDEV_STATE_RELEASED;
 }
