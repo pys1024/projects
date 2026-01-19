@@ -2,6 +2,9 @@
 #include "dev_check.h"
 #include "lv_tools.h"
 
+#define ENABLE_JOYSTICK_TRAJECTORY 1
+#define TRAJECTORY_MAX_POINTS    100
+
 #define CO_PREFIX "dev_"
 #define CO_NAME(key) CO_PREFIX #key
 
@@ -107,6 +110,13 @@ static lv_obj_t *create_joystick(lv_obj_t *parent, lv_coord_t x, lv_coord_t y)
   lv_label_set_text(label, "0,0");
   lv_obj_set_style_text_color(label, lv_color_white(), LV_PART_MAIN);
   lv_obj_center(label);
+
+#if ENABLE_JOYSTICK_TRAJECTORY
+  lv_obj_t *trajectory = lv_line_create(base);
+  lv_obj_set_style_line_color(trajectory, lv_color_make(255, 0, 0), LV_PART_MAIN);
+  lv_obj_set_style_line_width(trajectory, 2, LV_PART_MAIN);
+  lv_obj_set_name(trajectory, "trajectory");
+#endif
 
   return base;
 }
@@ -288,19 +298,33 @@ static void timer_cb(lv_timer_t *timer)
 
     obj = lv_obj_find_by_name(screen, CO_NAME(j1)); // joystick
     if (obj) {
-      child = lv_obj_get_child_by_type(obj, 0, &lv_label_class); // label
-      obj = lv_obj_find_by_name(obj, "stick"); // stick
-      if (obj) {
-        int32_t x = my_map(data.point.x, -100, 100, -JOYSTICK_BOUNDARY, JOYSTICK_BOUNDARY);
-        int32_t y = -my_map(data.point.y, -100, 100, -JOYSTICK_BOUNDARY, JOYSTICK_BOUNDARY);
+      int32_t x = my_map(data.point.x, -100, 100, -JOYSTICK_BOUNDARY, JOYSTICK_BOUNDARY);
+      int32_t y = -my_map(data.point.y, -100, 100, -JOYSTICK_BOUNDARY, JOYSTICK_BOUNDARY);
 
+#if ENABLE_JOYSTICK_TRAJECTORY
+      child = lv_obj_find_by_name(obj, "trajectory"); // trajectory
+      if (child) {
+        // Draw trajectory within the base circle
+        static lv_point_precise_t points[TRAJECTORY_MAX_POINTS] = {0};
+        static uint16_t point_idx = 0;
+
+        points[point_idx].x = x / 2;
+        points[point_idx].y = y / 2;
+        point_idx = (point_idx + 1) % TRAJECTORY_MAX_POINTS;
+
+        lv_line_set_points(child, points, TRAJECTORY_MAX_POINTS);
+      }
+#endif
+      child = lv_obj_get_child_by_type(obj, 0, &lv_label_class); // label
+      if (child) {
+        lv_label_set_text_fmt(child, "%d,%d", data.point.x, data.point.y);
+      }
+
+      child = lv_obj_find_by_name(obj, "stick"); // stick
+      if (child) {
         float distance_from_center = sqrt(x * x + y * y);
         if (distance_from_center < JOYSTICK_BOUNDARY) {
-          lv_obj_set_pos(obj, x, y);
-        }
-
-        if (child) {
-          lv_label_set_text_fmt(child, "%d,%d", data.point.x, data.point.y);
+          lv_obj_set_pos(child, x, y);
         }
       }
     }
