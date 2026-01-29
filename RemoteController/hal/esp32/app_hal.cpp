@@ -90,7 +90,7 @@ void hal_loop()
 {
   lv_port_disp_loop(); // Call the LVGL display loop function
 
-  if (mcpDigitalRead(KEY3_PIN) == LOW) {
+  if (mcpDigitalRead(KEY1_PIN) == LOW) {
     digitalWrite(POWER_EN_PIN, LOW); // Turn off the device
     // while (1);
   }
