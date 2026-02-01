@@ -3,7 +3,7 @@
 #include "lv_tools.h"
 
 #define ENABLE_JOYSTICK_TRAJECTORY 1
-#define TRAJECTORY_MAX_POINTS    100
+#define TRAJECTORY_MAX_POINTS    1000
 
 #define CO_PREFIX "dev_"
 #define CO_NAME(key) CO_PREFIX #key
@@ -27,7 +27,7 @@
 
 #define JOYSTICK_BASE_RADIUS  (50)
 #define JOYSTICK_STICK_RADIUS (8)
-#define JOYSTICK_BOUNDARY (JOYSTICK_BASE_RADIUS - (JOYSTICK_STICK_RADIUS * 1.0))
+#define JOYSTICK_BOUNDARY ((int32_t)(JOYSTICK_BASE_RADIUS - (JOYSTICK_STICK_RADIUS * 1.0)))
 
 #define JOYSTICK_OFFSET_X (70)
 #define JOYSTICK_OFFSET_Y (-15)
@@ -349,8 +349,15 @@ static void timer_cb(lv_timer_t *timer)
         static lv_point_precise_t points[TRAJECTORY_MAX_POINTS] = {0};
         static uint16_t point_idx = 0;
 
-        points[point_idx].x = x / 2;
-        points[point_idx].y = y / 2;
+        for (uint16_t i = 0; i < TRAJECTORY_MAX_POINTS; i++) {
+          if (points[i].x == 0 && points[i].y == 0) {
+            points[i].x = JOYSTICK_BOUNDARY;
+            points[i].y = JOYSTICK_BOUNDARY;
+          }
+        }
+
+        points[point_idx].x = x + JOYSTICK_BOUNDARY;
+        points[point_idx].y = y + JOYSTICK_BOUNDARY;
         point_idx = (point_idx + 1) % TRAJECTORY_MAX_POINTS;
 
         lv_line_set_points(child, points, TRAJECTORY_MAX_POINTS);
