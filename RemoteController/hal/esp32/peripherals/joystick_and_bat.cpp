@@ -48,6 +48,17 @@ static void bat_read_cb(lv_indev_t *indev, lv_indev_data_t *data)
   data->state = (bat_val > 3700) ? LV_INDEV_STATE_PRESSED : LV_INDEV_STATE_RELEASED;
 }
 
+// Modify static values to be the median of 10 readings taken every 1ms
+static uint16_t readMedianValue(int pin) {
+  uint16_t readings[10];
+  for (int i = 0; i < 10; ++i) {
+    readings[i] = analogRead(pin);
+    delay(1); // 1ms delay between readings
+  }
+  std::sort(readings, readings + 10);
+  return readings[4]; // Return the median value
+}
+
 bool hal_joystick_and_bat_init(void)
 {
   pinMode(BAT_DET, INPUT); // Set BAT_DET as input
@@ -64,10 +75,10 @@ bool hal_joystick_and_bat_init(void)
   analogSetPinAttenuation(BAT_DET, ADC_11db); // Set BAT_DET attenuation to 11db
 
   // Set the initial values of the joystick coordinates
-  static_lx_val = analogRead(LX_PIN);
-  static_ly_val = analogRead(LY_PIN);
-  static_rx_val = analogRead(RX_PIN);
-  static_ry_val = analogRead(RY_PIN);
+  static_lx_val = readMedianValue(LX_PIN);
+  static_ly_val = readMedianValue(LY_PIN);
+  static_rx_val = readMedianValue(RX_PIN);
+  static_ry_val = readMedianValue(RY_PIN);
 
   lv_indev_t *indev1 = lv_indev_create();
   lv_indev_enable(indev1, false);

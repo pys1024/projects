@@ -215,15 +215,7 @@ static void timer_cb(lv_timer_t *timer)
       UPDATE_SWITCH_STATE(3, 14);
       UPDATE_SWITCH_STATE(4, 15);
 
-      if (data.key & (1 << 4)) { // i
-        hal_nrf24_send_cmd(1, 1, 1, 1);
-      } else if (data.key & (1 << 7)) { // k
-        hal_nrf24_send_cmd(-1, -1, -1, -1);
-      } else if (data.key & (1 << 5)) { // j
-        hal_nrf24_send_cmd(-1, 1, 1, -1);
-      } else if (data.key & (1 << 6)) { // l
-        hal_nrf24_send_cmd(1, -1, -1, 1);
-      } else if (data.key & (1 << 1)) { // a
+      if (data.key & (1 << 1)) { // a
         hal_nrf24_send_cmd(-1, 1, -1, 1);
       } else if (data.key & (1 << 2)) { // d
         hal_nrf24_send_cmd(1, -1, 1, -1);
@@ -232,6 +224,14 @@ static void timer_cb(lv_timer_t *timer)
                           (data.key & (1 << 13)) ? 1 : -1,
                           (data.key & (1 << 14)) ? 1 : -1,
                           (data.key & (1 << 15)) ? 1 : -1);
+      } else if (data.key & (1 << 4)) { // i
+        hal_nrf24_send_cmd(1, 1, 1, 1);
+      } else if (data.key & (1 << 7)) { // k
+        hal_nrf24_send_cmd(-1, -1, -1, -1);
+      } else if (data.key & (1 << 5)) { // j
+        hal_nrf24_send_cmd(-1, 1, 1, -1);
+      } else if (data.key & (1 << 6)) { // l
+        hal_nrf24_send_cmd(1, -1, -1, 1);
       } else {
         hal_nrf24_send_cmd(0, 0, 0, 0);
       }
