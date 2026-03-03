@@ -23,6 +23,7 @@ typedef enum {
 
 hal_status_t hal_init_device(uint8_t dev_id, char *msg, uint32_t msg_size);
 void hal_beep();
+bool hal_nrf24_send_cmd(int8_t cmd0, int8_t cmd1, int8_t cmd2, int8_t cmd3);
 
 #ifdef __cplusplus
 } /*extern "C"*/

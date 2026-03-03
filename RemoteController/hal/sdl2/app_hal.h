@@ -1,6 +1,8 @@
 #ifndef DRIVER_H
 #define DRIVER_H
 
+#include "cmath"
+
 #ifdef __cplusplus
 extern "C" {
 #endif

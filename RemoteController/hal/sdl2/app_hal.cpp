@@ -90,3 +90,10 @@ void hal_beep()
     SDL_Delay(100);
     Beeper::stop();
 }
+
+bool hal_nrf24_send_cmd(int8_t cmd0, int8_t cmd1, int8_t cmd2, int8_t cmd3)
+{
+    // Simulated NRF24L01+ command sending
+    printf("Sending NRF24L01+ command: %d %d %d %d\n", cmd0, cmd1, cmd2, cmd3);
+    return true;
+}
