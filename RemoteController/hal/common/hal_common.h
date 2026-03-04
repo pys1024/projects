@@ -12,8 +12,8 @@ extern "C" {
 #define MY_INDEV_TYPE_BUTTON ((lv_indev_type_t)0x13)
 #define MY_INDEV_TYPE_ENCODER1 ((lv_indev_type_t)0x14)
 #define MY_INDEV_TYPE_ENCODER2 ((lv_indev_type_t)0x15)
-// #define MY_INDEV_TYPE_ACCEL ((lv_indev_type_t)0x13)
-// #define MY_INDEV_TYPE_GYRO ((lv_indev_type_t)0x14)
+#define MY_INDEV_TYPE_ACCEL ((lv_indev_type_t)0x16)
+#define MY_INDEV_TYPE_GYRO ((lv_indev_type_t)0x17)
 
 typedef enum {
     HAL_OK,

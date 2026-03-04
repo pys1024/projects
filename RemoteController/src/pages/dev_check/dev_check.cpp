@@ -1,6 +1,7 @@
 #include "common.h"
 #include "dev_check.h"
 #include "lv_tools.h"
+#include "main_menu.h"
 
 #define ENABLE_JOYSTICK_TRAJECTORY 1
 #define TRAJECTORY_MAX_POINTS    1000
@@ -156,6 +157,22 @@ static void update_meteors(void)
     lv_obj_set_pos(m->head, m->x - 2, m->y - 2);
     lv_obj_set_style_opa(m->head, core_opa, LV_PART_MAIN);
     lv_obj_set_style_shadow_opa(m->head, glow_opa, LV_PART_MAIN);
+  }
+}
+
+static void dev_check_back_event_cb(lv_event_t *e)
+{
+  LV_UNUSED(e);
+  lv_obj_t *menu = main_menu_screen();
+  lv_screen_load_anim(menu, LV_SCREEN_LOAD_ANIM_MOVE_RIGHT, 220, 0, true);
+}
+
+static void dev_check_delete_event_cb(lv_event_t *e)
+{
+  LV_UNUSED(e);
+  if (timer) {
+    lv_timer_delete(timer);
+    timer = NULL;
   }
 }
 
@@ -627,6 +644,7 @@ lv_obj_t *dev_check(void)
   lv_obj_set_style_bg_grad_dir(screen, LV_GRAD_DIR_VER, LV_PART_MAIN);
   lv_obj_set_style_border_width(screen, 0, LV_PART_MAIN);
   lv_obj_set_style_pad_all(screen, SCREEN_PAD, LV_PART_MAIN);
+  lv_obj_add_event_cb(screen, dev_check_delete_event_cb, LV_EVENT_DELETE, NULL);
 
   lv_obj_t *top_bar = lv_obj_create(screen);
   lv_obj_set_size(top_bar, LCD_WIDTH - SCREEN_PAD * 2, TOP_BAR_HEIGHT);
@@ -685,7 +703,19 @@ lv_obj_t *dev_check(void)
   lv_obj_t *title = lv_label_create(top_bar);
   lv_label_set_text(title, "DEV CHECK");
   lv_obj_set_style_text_color(title, lv_color_white(), LV_PART_MAIN);
-  lv_obj_align(title, LV_ALIGN_LEFT_MID, 4, 0);
+  lv_obj_align(title, LV_ALIGN_LEFT_MID, 30, 0);
+
+  lv_obj_t *back = lv_button_create(top_bar);
+  lv_obj_set_size(back, 24, 18);
+  lv_obj_align(back, LV_ALIGN_LEFT_MID, 0, 0);
+  lv_obj_set_style_radius(back, 6, LV_PART_MAIN);
+  lv_obj_set_style_bg_color(back, lv_color_hex(0x1A627D), LV_PART_MAIN);
+  lv_obj_add_event_cb(back, dev_check_back_event_cb, LV_EVENT_CLICKED, NULL);
+
+  lv_obj_t *back_text = lv_label_create(back);
+  lv_label_set_text(back_text, "<");
+  lv_obj_set_style_text_color(back_text, lv_color_white(), LV_PART_MAIN);
+  lv_obj_center(back_text);
 
   lv_obj_t *sw1 = lv_switch_create(screen);
   lv_obj_t *sw2 = lv_switch_create(screen);

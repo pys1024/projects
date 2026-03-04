@@ -14,6 +14,26 @@ static lv_indev_t *lvMouse;
 static lv_indev_t *lvMouseWheel;
 static lv_indev_t *lvKeyboard;
 
+static void fake_accel_read_cb(lv_indev_t *indev, lv_indev_data_t *data)
+{
+    LV_UNUSED(indev);
+    uint32_t t = lv_tick_get();
+    data->point.x = (int16_t)(sinf(t * 0.003f) * 3000.0f);
+    data->point.y = (int16_t)(cosf(t * 0.0025f) * 3000.0f);
+    data->key = (int32_t)(sinf(t * 0.002f) * 9800.0f);
+    data->state = LV_INDEV_STATE_PRESSED;
+}
+
+static void fake_gyro_read_cb(lv_indev_t *indev, lv_indev_data_t *data)
+{
+    LV_UNUSED(indev);
+    uint32_t t = lv_tick_get();
+    data->point.x = (int16_t)(sinf(t * 0.006f) * 1200.0f);
+    data->point.y = (int16_t)(cosf(t * 0.005f) * 1200.0f);
+    data->key = (int32_t)(sinf(t * 0.004f) * 1200.0f);
+    data->state = LV_INDEV_STATE_PRESSED;
+}
+
 
 #if LV_USE_LOG != 0
 static void lv_log_print_g_cb(lv_log_level_t level, const char * buf)
@@ -51,6 +71,20 @@ void hal_setup(void)
     lvMouse = lv_sdl_mouse_create();
     lvMouseWheel = lv_sdl_mousewheel_create();
     lvKeyboard = lv_sdl_keyboard_create();
+
+    lv_indev_t *indev_acc = lv_indev_create();
+    lv_indev_enable(indev_acc, false);
+    lv_indev_set_driver_data(indev_acc, NULL);
+    lv_indev_set_type(indev_acc, MY_INDEV_TYPE_ACCEL);
+    lv_indev_set_mode(indev_acc, LV_INDEV_MODE_EVENT);
+    lv_indev_set_read_cb(indev_acc, fake_accel_read_cb);
+
+    lv_indev_t *indev_gyro = lv_indev_create();
+    lv_indev_enable(indev_gyro, false);
+    lv_indev_set_driver_data(indev_gyro, NULL);
+    lv_indev_set_type(indev_gyro, MY_INDEV_TYPE_GYRO);
+    lv_indev_set_mode(indev_gyro, LV_INDEV_MODE_EVENT);
+    lv_indev_set_read_cb(indev_gyro, fake_gyro_read_cb);
 }
 
 void hal_loop(void)
