@@ -5,6 +5,7 @@ static uint16_t static_lx_val = 0;
 static uint16_t static_ly_val = 0;
 static uint16_t static_rx_val = 0;
 static uint16_t static_ry_val = 0;
+uint16_t s_rx_vals[10] = {0};
 
 static void joystick1_read_cb(lv_indev_t *indev, lv_indev_data_t *data)
 {

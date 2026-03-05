@@ -388,6 +388,62 @@ static void value_changed_event_cb(lv_event_t * e)
     // lv_arc_rotate_obj_to_angle(arc, label, 25);
 }
 
+static void joystick_process(const lv_obj_t *obj, const lv_indev_data_t *data, uint8_t joystick_idx)
+{
+#if ENABLE_JOYSTICK_TRAJECTORY
+  static lv_point_precise_t points[2][TRAJECTORY_MAX_POINTS] = {0};
+  static uint16_t points_idx[2] = {0};
+#endif
+  lv_obj_t *child = NULL;
+
+  int32_t x = data->point.x;
+  int32_t y = data->point.y;
+
+  LV_UNUSED(joystick_idx);
+
+  child = lv_obj_get_child_by_type(obj, 0, &lv_label_class); // label
+  if (child) {
+    lv_label_set_text_fmt(child, "%d,%d", x, y);
+  }
+
+  child = lv_obj_find_by_name(obj, "stick"); // stick
+  if (child) {
+    if (x > 10 || x < -10 || y > 10 || y < -10) {
+      // hal_nrf24_send_cmd(data.point.x, data.point.y, 0, 0);
+    }
+
+    x = my_map(x, -100, 100, -JOYSTICK_BOUNDARY, JOYSTICK_BOUNDARY);
+    y = -my_map(y, -100, 100, -JOYSTICK_BOUNDARY, JOYSTICK_BOUNDARY);
+
+    float distance_from_center = sqrt(x * x + y * y);
+    if (distance_from_center < JOYSTICK_BOUNDARY) {
+      lv_obj_set_pos(child, x, y);
+    } else {
+      float ratio = JOYSTICK_BOUNDARY / distance_from_center;
+      lv_obj_set_pos(child, x * ratio, y * ratio);
+    }
+  }
+
+#if ENABLE_JOYSTICK_TRAJECTORY
+  child = lv_obj_find_by_name(obj, "trajectory"); // trajectory
+  if (child) {
+    // Draw trajectory within the base circle
+    for (uint16_t i = 0; i < TRAJECTORY_MAX_POINTS; i++) {
+      if (points[joystick_idx][i].x == 0 && points[joystick_idx][i].y == 0) {
+        points[joystick_idx][i].x = JOYSTICK_BASE_RADIUS;
+        points[joystick_idx][i].y = JOYSTICK_BASE_RADIUS;
+      }
+    }
+
+    points[joystick_idx][points_idx[joystick_idx]].x = x + JOYSTICK_BASE_RADIUS;
+    points[joystick_idx][points_idx[joystick_idx]].y = y + JOYSTICK_BASE_RADIUS;
+    points_idx[joystick_idx] = (points_idx[joystick_idx] + 1) % TRAJECTORY_MAX_POINTS;
+
+    lv_line_set_points(child, points[joystick_idx], TRAJECTORY_MAX_POINTS);
+  }
+#endif
+}
+
 static void timer_cb(lv_timer_t *timer)
 {
   lv_obj_t *screen = (lv_obj_t *)lv_timer_get_user_data(timer);
@@ -523,76 +579,17 @@ static void timer_cb(lv_timer_t *timer)
 
   if (indev_joystick1) {
     lv_indev_get_read_cb(indev_joystick1)(indev_joystick1, &data);
-
     obj = lv_obj_find_by_name(screen, CO_NAME(j1)); // joystick
     if (obj) {
-      int32_t x = data.point.x;
-      int32_t y = data.point.y;
-
-      child = lv_obj_get_child_by_type(obj, 0, &lv_label_class); // label
-      if (child) {
-        lv_label_set_text_fmt(child, "%d,%d", x, y);
-      }
-
-      child = lv_obj_find_by_name(obj, "stick"); // stick
-      if (child) {
-        if (x > 10 || x < -10 || y > 10 || y < -10) {
-          // hal_nrf24_send_cmd(data.point.x, data.point.y, 0, 0);
-        }
-
-        x = my_map(x, -100, 100, -JOYSTICK_BOUNDARY, JOYSTICK_BOUNDARY);
-        y = -my_map(y, -100, 100, -JOYSTICK_BOUNDARY, JOYSTICK_BOUNDARY);
-
-        float distance_from_center = sqrt(x * x + y * y);
-        if (distance_from_center < JOYSTICK_BOUNDARY) {
-          lv_obj_set_pos(child, x, y);
-        }
-      }
-
-#if ENABLE_JOYSTICK_TRAJECTORY
-      child = lv_obj_find_by_name(obj, "trajectory"); // trajectory
-      if (child) {
-        // Draw trajectory within the base circle
-        static lv_point_precise_t points[TRAJECTORY_MAX_POINTS] = {0};
-        static uint16_t point_idx = 0;
-
-        for (uint16_t i = 0; i < TRAJECTORY_MAX_POINTS; i++) {
-          if (points[i].x == 0 && points[i].y == 0) {
-            points[i].x = JOYSTICK_BOUNDARY;
-            points[i].y = JOYSTICK_BOUNDARY;
-          }
-        }
-
-        points[point_idx].x = x + JOYSTICK_BOUNDARY;
-        points[point_idx].y = y + JOYSTICK_BOUNDARY;
-        point_idx = (point_idx + 1) % TRAJECTORY_MAX_POINTS;
-
-        lv_line_set_points(child, points, TRAJECTORY_MAX_POINTS);
-      }
-#endif
+      joystick_process(obj, &data, 0);
     }
   }
 
   if (indev_joystick2) {
     lv_indev_get_read_cb(indev_joystick2)(indev_joystick2, &data);
-
     obj = lv_obj_find_by_name(screen, CO_NAME(j2)); // joystick
     if (obj) {
-      child = lv_obj_get_child_by_type(obj, 0, &lv_label_class); // label
-      obj = lv_obj_find_by_name(obj, "stick"); // stick
-      if (obj) {
-        int32_t x = my_map(data.point.x, -100, 100, -JOYSTICK_BOUNDARY, JOYSTICK_BOUNDARY);
-        int32_t y = -my_map(data.point.y, -100, 100, -JOYSTICK_BOUNDARY, JOYSTICK_BOUNDARY);
-
-        float distance_from_center = sqrt(x * x + y * y);
-        if (distance_from_center < JOYSTICK_BOUNDARY) {
-          lv_obj_set_pos(obj, x, y);
-        }
-
-        if (child) {
-          lv_label_set_text_fmt(child, "%d,%d", data.point.x, data.point.y);
-        }
-      }
+      joystick_process(obj, &data, 1);
     }
   }
 
