@@ -43,6 +43,10 @@
 
 #define METEOR_COUNT      (6)
 
+#define WHEEL_SPEED_BUTTON       (96)
+#define WHEEL_SPEED_JOYSTICK_MAX (120)
+#define JOYSTICK_DRIVE_DEADZONE  (14)
+
 #define COLOR_BG_TOP      lv_color_hex(0x08131F)
 #define COLOR_BG_BOTTOM   lv_color_hex(0x123149)
 #define COLOR_PANEL_TOP   lv_color_hex(0x14354E)
@@ -98,6 +102,68 @@ typedef struct {
 } meteor_t;
 
 static meteor_t meteors[METEOR_COUNT] = {0};
+
+static int8_t i8_clamp(int32_t value)
+{
+  if (value > 127) return 127;
+  if (value < -127) return -127;
+  return (int8_t)value;
+}
+
+static int32_t axis_to_signed_speed(int32_t axis)
+{
+  int32_t abs_axis = axis >= 0 ? axis : -axis;
+  abs_axis = abs_axis > 100 ? 100 : abs_axis;
+
+  if (abs_axis < JOYSTICK_DRIVE_DEADZONE) {
+    return 0;
+  }
+
+  int32_t speed = my_map(abs_axis, JOYSTICK_DRIVE_DEADZONE, 100, 0, WHEEL_SPEED_JOYSTICK_MAX);
+  return axis >= 0 ? speed : -speed;
+}
+
+static bool drive_cmd_from_joysticks(int32_t right_x, int32_t right_y, int32_t left_x,
+                                     int8_t *c0, int8_t *c1, int8_t *c2, int8_t *c3)
+{
+  int32_t vx = axis_to_signed_speed(right_x); // strafe right+
+  int32_t vy = axis_to_signed_speed(right_y); // forward+
+  int32_t wz = axis_to_signed_speed(left_x);  // rotate right+
+
+  if (vx == 0 && vy == 0 && wz == 0) {
+    *c0 = 0; *c1 = 0; *c2 = 0; *c3 = 0;
+    return false;
+  }
+
+  int32_t w0 = vy + vx + wz;
+  int32_t w1 = vy - vx - wz;
+  int32_t w2 = vy + vx - wz;
+  int32_t w3 = vy - vx + wz;
+
+  int32_t max_abs = 0;
+  int32_t abs_w0 = w0 >= 0 ? w0 : -w0;
+  int32_t abs_w1 = w1 >= 0 ? w1 : -w1;
+  int32_t abs_w2 = w2 >= 0 ? w2 : -w2;
+  int32_t abs_w3 = w3 >= 0 ? w3 : -w3;
+  if (abs_w0 > max_abs) max_abs = abs_w0;
+  if (abs_w1 > max_abs) max_abs = abs_w1;
+  if (abs_w2 > max_abs) max_abs = abs_w2;
+  if (abs_w3 > max_abs) max_abs = abs_w3;
+
+  if (max_abs > WHEEL_SPEED_JOYSTICK_MAX) {
+    w0 = (w0 * WHEEL_SPEED_JOYSTICK_MAX) / max_abs;
+    w1 = (w1 * WHEEL_SPEED_JOYSTICK_MAX) / max_abs;
+    w2 = (w2 * WHEEL_SPEED_JOYSTICK_MAX) / max_abs;
+    w3 = (w3 * WHEEL_SPEED_JOYSTICK_MAX) / max_abs;
+  }
+
+  *c0 = i8_clamp(w0);
+  *c1 = i8_clamp(w1);
+  *c2 = i8_clamp(w2);
+  *c3 = i8_clamp(w3);
+
+  return true;
+}
 
 static void meteor_reset(meteor_t *m)
 {
@@ -465,6 +531,18 @@ static void timer_cb(lv_timer_t *timer)
   lv_obj_t *obj = NULL;
   lv_obj_t *child = NULL;
   lv_indev_data_t data;
+  lv_indev_data_t joy1_data;
+  memset(&joy1_data, 0, sizeof(joy1_data));
+  lv_indev_data_t joy2_data;
+  memset(&joy2_data, 0, sizeof(joy2_data));
+  bool joy1_valid = false;
+  bool joy2_valid = false;
+
+  int8_t cmd0 = 0;
+  int8_t cmd1 = 0;
+  int8_t cmd2 = 0;
+  int8_t cmd3 = 0;
+  bool button_drive_active = false;
 
   if (indev_btn) {
     lv_indev_get_read_cb(indev_btn)(indev_btn, &data);
@@ -485,24 +563,35 @@ static void timer_cb(lv_timer_t *timer)
       UPDATE_SWITCH_STATE(4, 15);
 
       if (data.key & (1 << 1)) { // a
-        hal_nrf24_send_cmd(-1, 1, -1, 1);
+        cmd0 = -WHEEL_SPEED_BUTTON; cmd1 = WHEEL_SPEED_BUTTON;
+        cmd2 = -WHEEL_SPEED_BUTTON; cmd3 = WHEEL_SPEED_BUTTON;
+        button_drive_active = true;
       } else if (data.key & (1 << 2)) { // d
-        hal_nrf24_send_cmd(1, -1, 1, -1);
+        cmd0 = WHEEL_SPEED_BUTTON; cmd1 = -WHEEL_SPEED_BUTTON;
+        cmd2 = WHEEL_SPEED_BUTTON; cmd3 = -WHEEL_SPEED_BUTTON;
+        button_drive_active = true;
       } else if (data.key & (1 << 3)) { // s
-        hal_nrf24_send_cmd((data.key & (1 << 12)) ? 1 : -1,
-                          (data.key & (1 << 13)) ? 1 : -1,
-                          (data.key & (1 << 14)) ? 1 : -1,
-                          (data.key & (1 << 15)) ? 1 : -1);
+        cmd0 = (data.key & (1 << 12)) ? WHEEL_SPEED_BUTTON : -WHEEL_SPEED_BUTTON;
+        cmd1 = (data.key & (1 << 13)) ? WHEEL_SPEED_BUTTON : -WHEEL_SPEED_BUTTON;
+        cmd2 = (data.key & (1 << 14)) ? WHEEL_SPEED_BUTTON : -WHEEL_SPEED_BUTTON;
+        cmd3 = (data.key & (1 << 15)) ? WHEEL_SPEED_BUTTON : -WHEEL_SPEED_BUTTON;
+        button_drive_active = true;
       } else if (data.key & (1 << 4)) { // i
-        hal_nrf24_send_cmd(1, 1, 1, 1);
+        cmd0 = WHEEL_SPEED_BUTTON; cmd1 = WHEEL_SPEED_BUTTON;
+        cmd2 = WHEEL_SPEED_BUTTON; cmd3 = WHEEL_SPEED_BUTTON;
+        button_drive_active = true;
       } else if (data.key & (1 << 7)) { // k
-        hal_nrf24_send_cmd(-1, -1, -1, -1);
+        cmd0 = -WHEEL_SPEED_BUTTON; cmd1 = -WHEEL_SPEED_BUTTON;
+        cmd2 = -WHEEL_SPEED_BUTTON; cmd3 = -WHEEL_SPEED_BUTTON;
+        button_drive_active = true;
       } else if (data.key & (1 << 5)) { // j
-        hal_nrf24_send_cmd(-1, 1, 1, -1);
+        cmd0 = -WHEEL_SPEED_BUTTON; cmd1 = WHEEL_SPEED_BUTTON;
+        cmd2 = WHEEL_SPEED_BUTTON; cmd3 = -WHEEL_SPEED_BUTTON;
+        button_drive_active = true;
       } else if (data.key & (1 << 6)) { // l
-        hal_nrf24_send_cmd(1, -1, -1, 1);
-      } else {
-        hal_nrf24_send_cmd(0, 0, 0, 0);
+        cmd0 = WHEEL_SPEED_BUTTON; cmd1 = -WHEEL_SPEED_BUTTON;
+        cmd2 = -WHEEL_SPEED_BUTTON; cmd3 = WHEEL_SPEED_BUTTON;
+        button_drive_active = true;
       }
 
       obj = lv_obj_find_by_name(screen, CO_NAME(j1)); // joystick
@@ -584,20 +673,31 @@ static void timer_cb(lv_timer_t *timer)
   }
 
   if (indev_joystick1) {
-    lv_indev_get_read_cb(indev_joystick1)(indev_joystick1, &data);
+    lv_indev_get_read_cb(indev_joystick1)(indev_joystick1, &joy1_data);
+    joy1_valid = true;
     obj = lv_obj_find_by_name(screen, CO_NAME(j1)); // joystick
     if (obj) {
-      joystick_process(obj, &data, 0);
+      joystick_process(obj, &joy1_data, 0);
     }
   }
 
   if (indev_joystick2) {
-    lv_indev_get_read_cb(indev_joystick2)(indev_joystick2, &data);
+    lv_indev_get_read_cb(indev_joystick2)(indev_joystick2, &joy2_data);
+    joy2_valid = true;
     obj = lv_obj_find_by_name(screen, CO_NAME(j2)); // joystick
     if (obj) {
-      joystick_process(obj, &data, 1);
+      joystick_process(obj, &joy2_data, 1);
     }
   }
+
+  if (!button_drive_active && (joy2_valid || joy1_valid)) {
+    int32_t move_x = joy2_valid ? joy2_data.point.x : 0;
+    int32_t move_y = joy2_valid ? joy2_data.point.y : 0;
+    int32_t rot_axis = joy1_valid ? joy1_data.point.x : 0;
+    drive_cmd_from_joysticks(move_x, move_y, rot_axis, &cmd0, &cmd1, &cmd2, &cmd3);
+  }
+
+  hal_nrf24_send_cmd(cmd0, cmd1, cmd2, cmd3);
 
   if (indev_battery) {
     lv_indev_get_read_cb(indev_battery)(indev_battery, &data);
