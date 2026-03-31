@@ -45,21 +45,21 @@ bool hal_mcp23017_init()
   }
 
   mcp->pinMode(BEEP_PIN, OUTPUT);
-  mcp->pinMode(KEY1_PIN, INPUT);
-  mcp->pinMode(KEY2_PIN, INPUT);
-  mcp->pinMode(KEY3_PIN, INPUT);
-  mcp->pinMode(KEY5_PIN, INPUT);
-  mcp->pinMode(KEY6_PIN, INPUT);
-  mcp->pinMode(KEY7_PIN, INPUT);
-  mcp->pinMode(KEY8_PIN, INPUT);
-  mcp->pinMode(EC1_SW_PIN, INPUT);
-  mcp->pinMode(EC2_SW_PIN, INPUT);
-  mcp->pinMode(RC1_SW_PIN, INPUT);
-  mcp->pinMode(RC2_SW_PIN, INPUT);
-  mcp->pinMode(SW1_PIN, INPUT);
-  mcp->pinMode(SW2_PIN, INPUT);
-  mcp->pinMode(SW3_PIN, INPUT);
-  mcp->pinMode(SW4_PIN, INPUT);
+  mcp->pinMode(KEY1_PIN, INPUT_PULLUP);
+  mcp->pinMode(KEY2_PIN, INPUT_PULLUP);
+  mcp->pinMode(KEY3_PIN, INPUT_PULLUP);
+  mcp->pinMode(KEY5_PIN, INPUT_PULLUP);
+  mcp->pinMode(KEY6_PIN, INPUT_PULLUP);
+  mcp->pinMode(KEY7_PIN, INPUT_PULLUP);
+  mcp->pinMode(KEY8_PIN, INPUT_PULLUP);
+  mcp->pinMode(EC1_SW_PIN, INPUT_PULLUP);
+  mcp->pinMode(EC2_SW_PIN, INPUT_PULLUP);
+  mcp->pinMode(RC1_SW_PIN, INPUT_PULLUP);
+  mcp->pinMode(RC2_SW_PIN, INPUT_PULLUP);
+  mcp->pinMode(SW1_PIN, INPUT_PULLUP);
+  mcp->pinMode(SW2_PIN, INPUT_PULLUP);
+  mcp->pinMode(SW3_PIN, INPUT_PULLUP);
+  mcp->pinMode(SW4_PIN, INPUT_PULLUP);
 
   lv_indev_t *indev = lv_indev_create();
   lv_indev_enable(indev, false);

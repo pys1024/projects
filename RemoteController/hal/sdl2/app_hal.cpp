@@ -13,25 +13,44 @@ static lv_display_t *lvDisplay;
 static lv_indev_t *lvMouse;
 static lv_indev_t *lvMouseWheel;
 static lv_indev_t *lvKeyboard;
+static lv_indev_data_t cached_fake_accel;
+static lv_indev_data_t cached_fake_gyro;
+static uint32_t cached_fake_sample_ms = 0;
+static bool cached_fake_valid = false;
+
+static void refresh_fake_mpu_sample(void)
+{
+    uint32_t t = lv_tick_get();
+    if (cached_fake_valid && cached_fake_sample_ms == t) {
+        return;
+    }
+
+    cached_fake_accel.point.x = (int16_t)(sinf(t * 0.003f) * 3000.0f);
+    cached_fake_accel.point.y = (int16_t)(cosf(t * 0.0025f) * 3000.0f);
+    cached_fake_accel.key = (int32_t)(sinf(t * 0.002f) * 9800.0f);
+    cached_fake_accel.state = LV_INDEV_STATE_PRESSED;
+
+    cached_fake_gyro.point.x = (int16_t)(sinf(t * 0.006f) * 1200.0f);
+    cached_fake_gyro.point.y = (int16_t)(cosf(t * 0.005f) * 1200.0f);
+    cached_fake_gyro.key = (int32_t)(sinf(t * 0.004f) * 1200.0f);
+    cached_fake_gyro.state = LV_INDEV_STATE_PRESSED;
+
+    cached_fake_sample_ms = t;
+    cached_fake_valid = true;
+}
 
 static void fake_accel_read_cb(lv_indev_t *indev, lv_indev_data_t *data)
 {
     LV_UNUSED(indev);
-    uint32_t t = lv_tick_get();
-    data->point.x = (int16_t)(sinf(t * 0.003f) * 3000.0f);
-    data->point.y = (int16_t)(cosf(t * 0.0025f) * 3000.0f);
-    data->key = (int32_t)(sinf(t * 0.002f) * 9800.0f);
-    data->state = LV_INDEV_STATE_PRESSED;
+    refresh_fake_mpu_sample();
+    *data = cached_fake_accel;
 }
 
 static void fake_gyro_read_cb(lv_indev_t *indev, lv_indev_data_t *data)
 {
     LV_UNUSED(indev);
-    uint32_t t = lv_tick_get();
-    data->point.x = (int16_t)(sinf(t * 0.006f) * 1200.0f);
-    data->point.y = (int16_t)(cosf(t * 0.005f) * 1200.0f);
-    data->key = (int32_t)(sinf(t * 0.004f) * 1200.0f);
-    data->state = LV_INDEV_STATE_PRESSED;
+    refresh_fake_mpu_sample();
+    *data = cached_fake_gyro;
 }
 
 
@@ -71,6 +90,9 @@ void hal_setup(void)
     lvMouse = lv_sdl_mouse_create();
     lvMouseWheel = lv_sdl_mousewheel_create();
     lvKeyboard = lv_sdl_keyboard_create();
+
+    cached_fake_sample_ms = 0;
+    cached_fake_valid = false;
 
     lv_indev_t *indev_acc = lv_indev_create();
     lv_indev_enable(indev_acc, false);

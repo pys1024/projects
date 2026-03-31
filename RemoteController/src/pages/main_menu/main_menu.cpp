@@ -1,9 +1,7 @@
 #include "common.h"
 
+#include "app_navigation.h"
 #include "main_menu.h"
-#include "dev_check.h"
-#include "mpu_test.h"
-#include "mpu_attitude.h"
 
 #define MENU_BG_TOP      lv_color_hex(0x08131F)
 #define MENU_BG_BOTTOM   lv_color_hex(0x123149)
@@ -85,18 +83,21 @@ static void add_menu_bg_fx(lv_obj_t *screen)
 static void menu_item_event_cb(lv_event_t *e)
 {
   const char *name = (const char *)lv_event_get_user_data(e);
-  lv_obj_t *next = NULL;
+  app_page_id_t next = APP_PAGE_MAIN_MENU;
+  bool valid = true;
 
   if (strcmp(name, "dev") == 0) {
-    next = dev_check();
+    next = APP_PAGE_DEV_CHECK;
   } else if (strcmp(name, "mpu") == 0) {
-    next = mpu_test();
+    next = APP_PAGE_MPU_TEST;
   } else if (strcmp(name, "att") == 0) {
-    next = mpu_attitude();
+    next = APP_PAGE_MPU_ATTITUDE;
+  } else {
+    valid = false;
   }
 
-  if (next) {
-    lv_screen_load_anim(next, LV_SCREEN_LOAD_ANIM_MOVE_LEFT, 260, 0, true);
+  if (valid) {
+    app_nav_open(next, LV_SCREEN_LOAD_ANIM_MOVE_LEFT, 260, 0, true);
   }
 }
 

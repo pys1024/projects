@@ -3,6 +3,20 @@
 
 cst816t *touchpad = new cst816t(Wire1, TP_RST_PIN, TP_INT_PIN);
 
+static int16_t clamp_touch_coord(uint32_t value, int16_t limit)
+{
+  if (limit <= 0) {
+    return 0;
+  }
+
+  uint32_t max_value = (uint32_t)(limit - 1);
+  if (value > max_value) {
+    value = max_value;
+  }
+
+  return (int16_t)value;
+}
+
 /*Read the touchpad*/
 void my_touchpad_read(lv_indev_t *indev, lv_indev_data_t *data)
 {
@@ -15,8 +29,8 @@ void my_touchpad_read(lv_indev_t *indev, lv_indev_data_t *data)
     tp_y = touchpad->y;
     tp_fingers = touchpad->finger_num;
   }
-  data->point.x = tp_x;
-  data->point.y = tp_y;
+  data->point.x = clamp_touch_coord(tp_x, LCD_WIDTH);
+  data->point.y = clamp_touch_coord(tp_y, LCD_HEIGHT);
   if (tp_fingers != 0) {
     data->state = LV_INDEV_STATE_PRESSED;
   } else {

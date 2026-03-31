@@ -1,19 +1,20 @@
 #include "common.h"
 
+#include "app_navigation.h"
 #include "mpu_attitude.h"
-#include "main_menu.h"
 
 #define DIAL_TICK_COUNT        12
 #define DIAL_NUMBER_COUNT      6
+#define ATT_TOP_HIT_H          36
 #define DIAL_CARD_W            74
-#define DIAL_CARD_H            112
+#define DIAL_CARD_H            104
 #define DIAL_FACE_SIZE         56
 #define DIAL_CENTER            (DIAL_FACE_SIZE / 2)
 #define DIAL_NEEDLE_FRONT_LEN  20
 #define DIAL_NEEDLE_BACK_LEN   9
 #define DIAL_TICK_OUTER_RADIUS 25
 #define DIAL_TICK_MAJOR_INNER  19
-#define DIAL_TICK_MINOR_INNER  19
+#define DIAL_TICK_MINOR_INNER  22
 #define DIAL_NUMBER_RADIUS     16
 
 typedef enum {
@@ -36,6 +37,7 @@ typedef struct {
   uint8_t decimals;
   float min;
   float max;
+  bool wrap_pointer;
   float val;
 } dial_t;
 
@@ -142,6 +144,17 @@ static float wrap_deg(float v)
 static float deg_to_rad(float v)
 {
   return v * 3.1415926f / 180.0f;
+}
+
+static void calc_gravity_body(float roll_deg, float pitch_deg, float out[3])
+{
+  const float g = 9.80665f;
+  float roll = deg_to_rad(roll_deg);
+  float pitch = deg_to_rad(pitch_deg);
+
+  out[0] = -sinf(pitch) * g;
+  out[1] = sinf(roll) * cosf(pitch) * g;
+  out[2] = cosf(roll) * cosf(pitch) * g;
 }
 
 static lv_color_t theme_screen_top(att_theme_t theme)
@@ -280,8 +293,13 @@ static void dial_set(dial_t *d, float pointer_value, float display_value)
   }
 
   float v = pointer_value;
-  while (v < d->min) v += span;
-  while (v >= d->max) v -= span;
+  if (d->wrap_pointer) {
+    while (v < d->min) v += span;
+    while (v >= d->max) v -= span;
+  } else {
+    if (v < d->min) v = d->min;
+    if (v > d->max) v = d->max;
+  }
 
   float t = (v - d->min) / span;
   int32_t rot10 = (int32_t)((-90.0f + t * 360.0f) * 10.0f);
@@ -303,7 +321,7 @@ static void dial_set(dial_t *d, float pointer_value, float display_value)
 }
 
 static lv_obj_t *create_dial(lv_obj_t *parent, uint8_t idx, const char *title, const char *unit, uint8_t decimals,
-                             float scale_max, int16_t x, int16_t y, dial_t *d)
+                             float scale_min, float scale_max, bool wrap_pointer, int16_t x, int16_t y, dial_t *d)
 {
   lv_color_t ring_color = dial_ring_color(att_theme, idx);
   lv_color_t needle_color = dial_needle_color(att_theme, idx);
@@ -374,8 +392,9 @@ static lv_obj_t *create_dial(lv_obj_t *parent, uint8_t idx, const char *title, c
     }
 
     for (uint8_t i = 0; i < DIAL_NUMBER_COUNT; i++) {
-      int32_t step = (int32_t)(scale_max / DIAL_NUMBER_COUNT + 0.5f);
-      int32_t mark = step * i;
+      float span = scale_max - scale_min;
+      float mark_value = scale_min + (span * i) / DIAL_NUMBER_COUNT;
+      int32_t mark = mark_value >= 0.0f ? (int32_t)(mark_value + 0.5f) : (int32_t)(mark_value - 0.5f);
       char num_text[8];
       snprintf(num_text, sizeof(num_text), "%d", (int)mark);
 
@@ -453,8 +472,9 @@ static lv_obj_t *create_dial(lv_obj_t *parent, uint8_t idx, const char *title, c
   d->face = g;
   d->unit = unit;
   d->decimals = decimals;
-  d->min = 0.0f;
+  d->min = scale_min;
   d->max = scale_max;
+  d->wrap_pointer = wrap_pointer;
   d->needle_front = needle_front;
   d->needle_back = needle_back;
   d->hub = hub;
@@ -537,8 +557,9 @@ static void apply_theme(void)
 
 static void back_to_menu(void)
 {
-  lv_obj_t *menu = main_menu_screen();
-  lv_screen_load_anim(menu, LV_SCREEN_LOAD_ANIM_MOVE_RIGHT, 220, 0, true);
+  if (!app_nav_back(LV_SCREEN_LOAD_ANIM_MOVE_RIGHT, 220, 0, true)) {
+    app_nav_open_root(APP_PAGE_MAIN_MENU, LV_SCREEN_LOAD_ANIM_MOVE_RIGHT, 220, 0, true);
+  }
 }
 
 static void top_hit_event_cb(lv_event_t *e)
@@ -565,10 +586,16 @@ static void att_timer_cb(lv_timer_t *timer)
     return;
   }
 
+  lv_indev_read_cb_t gyro_read = lv_indev_get_read_cb(gyro);
+  lv_indev_read_cb_t accel_read = lv_indev_get_read_cb(accel);
+  if (!gyro_read || !accel_read) {
+    return;
+  }
+
   lv_indev_data_t data_g;
   lv_indev_data_t data_a;
-  lv_indev_get_read_cb(gyro)(gyro, &data_g);
-  lv_indev_get_read_cb(accel)(accel, &data_a);
+  gyro_read(gyro, &data_g);
+  accel_read(accel, &data_a);
 
   uint32_t now = lv_tick_get();
   if (last_ms == 0) {
@@ -585,39 +612,6 @@ static void att_timer_cb(lv_timer_t *timer)
   float ay = data_a.point.y / 1000.0f;
   float az = data_a.key / 1000.0f;
 
-  if (accel_bias_n < 40) {
-    float k = 1.0f / (float)(accel_bias_n + 1);
-    accel_bias[0] += (ax - accel_bias[0]) * k;
-    accel_bias[1] += (ay - accel_bias[1]) * k;
-    accel_bias[2] += (az - accel_bias[2]) * k;
-    accel_bias_n++;
-  }
-
-  float lin_a[3] = {
-    ax - accel_bias[0],
-    ay - accel_bias[1],
-    az - accel_bias[2],
-  };
-
-  const float accel_deadband = 0.08f;
-  const float vel_damp = 0.985f;
-  const float pos_damp = 0.999f;
-
-  for (uint8_t i = 0; i < 3; i++) {
-    if (fabsf(lin_a[i]) < accel_deadband) {
-      lin_a[i] = 0.0f;
-    }
-
-    vel_mps[i] = (vel_mps[i] + lin_a[i] * dt) * vel_damp;
-    if (fabsf(vel_mps[i]) < 0.002f) {
-      vel_mps[i] = 0.0f;
-    }
-
-    pos_cm[i] = (pos_cm[i] + vel_mps[i] * dt * 100.0f) * pos_damp;
-    if (pos_cm[i] > 120.0f) pos_cm[i] = 120.0f;
-    if (pos_cm[i] < -120.0f) pos_cm[i] = -120.0f;
-  }
-
   float gx_deg = (data_g.point.x / 1000.0f) * 57.29578f;
   float gy_deg = (data_g.point.y / 1000.0f) * 57.29578f;
   float gz_deg = (data_g.key / 1000.0f) * 57.29578f;
@@ -626,12 +620,63 @@ static void att_timer_cb(lv_timer_t *timer)
   float pitch_acc = atan2f(-ax, sqrtf(ay * ay + az * az)) * 57.29578f;
 
   const float acc_blend = 0.02f;
-  att_deg[0] = (1.0f - acc_blend) * (att_deg[0] + gx_deg * dt) + acc_blend * roll_acc;
-  att_deg[1] = (1.0f - acc_blend) * (att_deg[1] + gy_deg * dt) + acc_blend * pitch_acc;
+  att_deg[0] = wrap_deg((1.0f - acc_blend) * (att_deg[0] + gx_deg * dt) + acc_blend * roll_acc);
+  att_deg[1] = wrap_deg((1.0f - acc_blend) * (att_deg[1] + gy_deg * dt) + acc_blend * pitch_acc);
   att_deg[2] = wrap_deg(att_deg[2] + gz_deg * dt);
 
-  float roll_disp = wrap_360(att_deg[0]);
-  float pitch_disp = wrap_360(att_deg[1]);
+  float gravity_bias[3];
+  calc_gravity_body(roll_acc, pitch_acc, gravity_bias);
+
+  if (accel_bias_n < 40) {
+    float k = 1.0f / (float)(accel_bias_n + 1);
+    accel_bias[0] += ((ax - gravity_bias[0]) - accel_bias[0]) * k;
+    accel_bias[1] += ((ay - gravity_bias[1]) - accel_bias[1]) * k;
+    accel_bias[2] += ((az - gravity_bias[2]) - accel_bias[2]) * k;
+    accel_bias_n++;
+  }
+
+  float gravity_body[3];
+  calc_gravity_body(att_deg[0], att_deg[1], gravity_body);
+
+  float lin_a[3] = {
+    ax - gravity_body[0] - accel_bias[0],
+    ay - gravity_body[1] - accel_bias[1],
+    az - gravity_body[2] - accel_bias[2],
+  };
+
+  const float accel_deadband = 0.08f;
+  const float still_accel = 0.12f;
+  const float still_gyro = 2.0f;
+  const float vel_damp = 0.985f;
+  const float pos_damp = 0.999f;
+  bool stationary = fabsf(gx_deg) < still_gyro && fabsf(gy_deg) < still_gyro && fabsf(gz_deg) < still_gyro;
+
+  for (uint8_t i = 0; i < 3; i++) {
+    if (fabsf(lin_a[i]) < accel_deadband) {
+      lin_a[i] = 0.0f;
+    }
+    if (fabsf(lin_a[i]) > still_accel) {
+      stationary = false;
+    }
+  }
+
+  for (uint8_t i = 0; i < 3; i++) {
+    if (stationary) {
+      vel_mps[i] = 0.0f;
+    } else {
+      vel_mps[i] = (vel_mps[i] + lin_a[i] * dt) * vel_damp;
+      if (fabsf(vel_mps[i]) < 0.002f) {
+        vel_mps[i] = 0.0f;
+      }
+    }
+
+    pos_cm[i] = (pos_cm[i] + vel_mps[i] * dt * 100.0f) * pos_damp;
+    if (pos_cm[i] > 120.0f) pos_cm[i] = 120.0f;
+    if (pos_cm[i] < -120.0f) pos_cm[i] = -120.0f;
+  }
+
+  float roll_disp = wrap_deg(att_deg[0]);
+  float pitch_disp = wrap_deg(att_deg[1]);
   float yaw_disp = wrap_360(att_deg[2]);
 
   dial_set(&dials[0], pos_cm[0], pos_cm[0]);
@@ -656,7 +701,7 @@ lv_obj_t *mpu_attitude(void)
 
   lv_obj_t *top = lv_obj_create(screen);
   att_top_obj = top;
-  lv_obj_set_size(top, LCD_WIDTH - 12, 30);
+  lv_obj_set_size(top, LCD_WIDTH - 12, 34);
   lv_obj_align(top, LV_ALIGN_TOP_MID, 0, 6);
   lv_obj_set_style_radius(top, 10, LV_PART_MAIN);
   lv_obj_set_style_bg_color(top, theme_top_bg(att_theme), LV_PART_MAIN);
@@ -689,24 +734,25 @@ lv_obj_t *mpu_attitude(void)
   lv_obj_align(hint, LV_ALIGN_BOTTOM_MID, 0, -6);
 
   lv_obj_t *top_hit = lv_button_create(screen);
-  lv_obj_set_size(top_hit, LCD_WIDTH - 12, 30);
+  lv_obj_set_size(top_hit, LCD_WIDTH - 12, ATT_TOP_HIT_H);
   lv_obj_align(top_hit, LV_ALIGN_TOP_MID, 0, 6);
   lv_obj_set_style_bg_opa(top_hit, LV_OPA_0, LV_PART_MAIN);
   lv_obj_set_style_border_width(top_hit, 0, LV_PART_MAIN);
   lv_obj_set_style_shadow_width(top_hit, 0, LV_PART_MAIN);
   lv_obj_set_style_radius(top_hit, 10, LV_PART_MAIN);
+  lv_obj_remove_flag(top_hit, LV_OBJ_FLAG_SCROLLABLE);
   lv_obj_add_event_cb(top_hit, top_hit_event_cb, LV_EVENT_SHORT_CLICKED, NULL);
   lv_obj_add_event_cb(top_hit, top_hit_event_cb, LV_EVENT_LONG_PRESSED, NULL);
   lv_obj_move_foreground(top_hit);
 
   memset(dials, 0, sizeof(dials));
 
-  create_dial(screen, 0, "POS X", "cm", 1, 240.0f, 6, 44, &dials[0]);
-  create_dial(screen, 1, "POS Y", "cm", 1, 240.0f, 83, 44, &dials[1]);
-  create_dial(screen, 2, "POS Z", "cm", 1, 240.0f, 160, 44, &dials[2]);
-  create_dial(screen, 3, "ATT R", "deg", 0, 360.0f, 6, 160, &dials[3]);
-  create_dial(screen, 4, "ATT P", "deg", 0, 360.0f, 83, 160, &dials[4]);
-  create_dial(screen, 5, "ATT Y", "deg", 0, 360.0f, 160, 160, &dials[5]);
+  create_dial(screen, 0, "POS X", "cm", 1, -120.0f, 120.0f, false, 6, 44, &dials[0]);
+  create_dial(screen, 1, "POS Y", "cm", 1, -120.0f, 120.0f, false, 83, 44, &dials[1]);
+  create_dial(screen, 2, "POS Z", "cm", 1, -120.0f, 120.0f, false, 160, 44, &dials[2]);
+  create_dial(screen, 3, "ATT R", "deg", 0, -180.0f, 180.0f, true, 6, 152, &dials[3]);
+  create_dial(screen, 4, "ATT P", "deg", 0, -180.0f, 180.0f, true, 83, 152, &dials[4]);
+  create_dial(screen, 5, "ATT Y", "deg", 0, 0.0f, 360.0f, true, 160, 152, &dials[5]);
 
   for (uint8_t i = 0; i < 6; i++) {
     dial_set(&dials[i], 0.0f, 0.0f);

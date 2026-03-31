@@ -1,6 +1,12 @@
 #include "common.h"
 
+#include "app_navigation.h"
 #include "app_hal.h"
+
+static void hal_power_off(void)
+{
+  digitalWrite(POWER_EN_PIN, LOW);
+}
 
 hal_status_t hal_init_device(uint8_t dev_id, char *msg, uint32_t msg_size)
 {
@@ -63,7 +69,7 @@ void hal_setup()
   // GPIO Initialization
   pinMode(POWER_EN_PIN, OUTPUT); // Set POWER_EN_PIN as output
   pinMode(LCD_BLK_PIN, OUTPUT); // Set LCD_BLK_PIN as output
-  pinMode(KEY4_PIN, INPUT); // Set KEY4_PIN as input
+  pinMode(KEY4_PIN, INPUT_PULLUP); // Set KEY4_PIN as input
 
   digitalWrite(POWER_EN_PIN, HIGH); // Turn on the device
 
@@ -88,12 +94,29 @@ void hal_setup()
 
 void hal_loop()
 {
+  static bool ec2_sw_last_pressed = false;
+  static uint32_t ec2_sw_last_event_ms = 0;
+
   lv_port_disp_loop(); // Call the LVGL display loop function
 
   if (mcpDigitalRead(KEY1_PIN) == LOW) {
-    digitalWrite(POWER_EN_PIN, LOW); // Turn off the device
+    hal_power_off(); // Turn off the device
     // while (1);
   }
+
+  bool ec2_sw_pressed = (mcpDigitalRead(EC2_SW_PIN) == LOW);
+  if (ec2_sw_pressed && !ec2_sw_last_pressed) {
+    uint32_t now = millis();
+    if (now - ec2_sw_last_event_ms >= 180) {
+      ec2_sw_last_event_ms = now;
+      if (app_nav_can_go_back()) {
+        app_nav_back(LV_SCREEN_LOAD_ANIM_MOVE_RIGHT, 220, 0, true);
+      } else {
+        hal_power_off();
+      }
+    }
+  }
+  ec2_sw_last_pressed = ec2_sw_pressed;
 
 #if 0
   if (millis() % 100 == 0) {
@@ -130,4 +153,3 @@ void hal_loop()
   }
 #endif
 }
-

@@ -1,7 +1,7 @@
 #include "common.h"
 
+#include "app_navigation.h"
 #include "mpu_test.h"
-#include "main_menu.h"
 
 #define MPU_BG_TOP      lv_color_hex(0x08131F)
 #define MPU_BG_BOTTOM   lv_color_hex(0x123149)
@@ -70,8 +70,9 @@ static void format_milli(char *buf, size_t size, int32_t v)
 static void back_event_cb(lv_event_t *e)
 {
   LV_UNUSED(e);
-  lv_obj_t *menu = main_menu_screen();
-  lv_screen_load_anim(menu, LV_SCREEN_LOAD_ANIM_MOVE_RIGHT, 220, 0, true);
+  if (!app_nav_back(LV_SCREEN_LOAD_ANIM_MOVE_RIGHT, 220, 0, true)) {
+    app_nav_open_root(APP_PAGE_MAIN_MENU, LV_SCREEN_LOAD_ANIM_MOVE_RIGHT, 220, 0, true);
+  }
 }
 
 static void mpu_screen_delete_cb(lv_event_t *e)

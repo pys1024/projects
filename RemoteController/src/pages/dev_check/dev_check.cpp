@@ -1,7 +1,7 @@
 #include "common.h"
+#include "app_navigation.h"
 #include "dev_check.h"
 #include "lv_tools.h"
-#include "main_menu.h"
 
 #define ENABLE_JOYSTICK_TRAJECTORY 1
 #define TRAJECTORY_MAX_POINTS    1000
@@ -43,8 +43,8 @@
 
 #define METEOR_COUNT      (6)
 
-#define WHEEL_SPEED_BUTTON       (96)
-#define WHEEL_SPEED_JOYSTICK_MAX (120)
+#define DRIVE_LIMIT_MAX          (127)
+#define DRIVE_LIMIT_DEFAULT_PCT  (100)
 #define JOYSTICK_DRIVE_DEADZONE  (14)
 
 #define COLOR_BG_TOP      lv_color_hex(0x08131F)
@@ -110,7 +110,13 @@ static int8_t i8_clamp(int32_t value)
   return (int8_t)value;
 }
 
-static int32_t axis_to_signed_speed(int32_t axis)
+static int32_t drive_percent_to_limit(int32_t percent)
+{
+  percent = percent < 0 ? 0 : percent > 100 ? 100 : percent;
+  return my_map(percent, 0, 100, 0, DRIVE_LIMIT_MAX);
+}
+
+static int32_t axis_to_signed_speed(int32_t axis, int32_t max_speed)
 {
   int32_t abs_axis = axis >= 0 ? axis : -axis;
   abs_axis = abs_axis > 100 ? 100 : abs_axis;
@@ -119,16 +125,17 @@ static int32_t axis_to_signed_speed(int32_t axis)
     return 0;
   }
 
-  int32_t speed = my_map(abs_axis, JOYSTICK_DRIVE_DEADZONE, 100, 0, WHEEL_SPEED_JOYSTICK_MAX);
+  int32_t speed = my_map(abs_axis, JOYSTICK_DRIVE_DEADZONE, 100, 0, max_speed);
   return axis >= 0 ? speed : -speed;
 }
 
-static bool drive_cmd_from_joysticks(int32_t right_x, int32_t right_y, int32_t left_x,
+static bool drive_cmd_from_joysticks(int32_t move_x, int32_t move_y, int32_t rot_axis,
+                                     int32_t max_speed,
                                      int8_t *c0, int8_t *c1, int8_t *c2, int8_t *c3)
 {
-  int32_t vx = axis_to_signed_speed(right_x); // strafe right+
-  int32_t vy = axis_to_signed_speed(right_y); // forward+
-  int32_t wz = axis_to_signed_speed(left_x);  // rotate right+
+  int32_t vx = axis_to_signed_speed(move_x, max_speed);   // strafe right+
+  int32_t vy = axis_to_signed_speed(move_y, max_speed);   // forward+
+  int32_t wz = axis_to_signed_speed(rot_axis, max_speed); // rotate right+
 
   if (vx == 0 && vy == 0 && wz == 0) {
     *c0 = 0; *c1 = 0; *c2 = 0; *c3 = 0;
@@ -137,8 +144,8 @@ static bool drive_cmd_from_joysticks(int32_t right_x, int32_t right_y, int32_t l
 
   int32_t w0 = vy + vx + wz;
   int32_t w1 = vy - vx - wz;
-  int32_t w2 = vy + vx - wz;
-  int32_t w3 = vy - vx + wz;
+  int32_t w2 = vy - vx + wz;
+  int32_t w3 = vy + vx - wz;
 
   int32_t max_abs = 0;
   int32_t abs_w0 = w0 >= 0 ? w0 : -w0;
@@ -150,11 +157,11 @@ static bool drive_cmd_from_joysticks(int32_t right_x, int32_t right_y, int32_t l
   if (abs_w2 > max_abs) max_abs = abs_w2;
   if (abs_w3 > max_abs) max_abs = abs_w3;
 
-  if (max_abs > WHEEL_SPEED_JOYSTICK_MAX) {
-    w0 = (w0 * WHEEL_SPEED_JOYSTICK_MAX) / max_abs;
-    w1 = (w1 * WHEEL_SPEED_JOYSTICK_MAX) / max_abs;
-    w2 = (w2 * WHEEL_SPEED_JOYSTICK_MAX) / max_abs;
-    w3 = (w3 * WHEEL_SPEED_JOYSTICK_MAX) / max_abs;
+  if (max_abs > max_speed) {
+    w0 = (w0 * max_speed) / max_abs;
+    w1 = (w1 * max_speed) / max_abs;
+    w2 = (w2 * max_speed) / max_abs;
+    w3 = (w3 * max_speed) / max_abs;
   }
 
   *c0 = i8_clamp(w0);
@@ -233,8 +240,9 @@ static void update_meteors(void)
 static void dev_check_back_event_cb(lv_event_t *e)
 {
   LV_UNUSED(e);
-  lv_obj_t *menu = main_menu_screen();
-  lv_screen_load_anim(menu, LV_SCREEN_LOAD_ANIM_MOVE_RIGHT, 220, 0, true);
+  if (!app_nav_back(LV_SCREEN_LOAD_ANIM_MOVE_RIGHT, 220, 0, true)) {
+    app_nav_open_root(APP_PAGE_MAIN_MENU, LV_SCREEN_LOAD_ANIM_MOVE_RIGHT, 220, 0, true);
+  }
 }
 
 static void dev_check_delete_event_cb(lv_event_t *e)
@@ -542,103 +550,109 @@ static void timer_cb(lv_timer_t *timer)
   int8_t cmd1 = 0;
   int8_t cmd2 = 0;
   int8_t cmd3 = 0;
+  int32_t drive_limit_pct = DRIVE_LIMIT_DEFAULT_PCT;
+  int32_t drive_limit = drive_percent_to_limit(drive_limit_pct);
   bool button_drive_active = false;
+
+  obj = lv_obj_find_by_name(screen, CO_NAME(x));
+  if (obj) {
+    drive_limit_pct = lv_arc_get_value(obj);
+    drive_limit = drive_percent_to_limit(drive_limit_pct);
+  }
 
   if (indev_btn) {
     lv_indev_get_read_cb(indev_btn)(indev_btn, &data);
 
-    if (data.state == LV_INDEV_STATE_PRESSED) {
-      UPDATE_KEY_STATE(w, 0);
-      UPDATE_KEY_STATE(a, 1);
-      UPDATE_KEY_STATE(d, 2);
-      UPDATE_KEY_STATE(s, 3);
-      UPDATE_KEY_STATE(i, 4);
-      UPDATE_KEY_STATE(j, 5);
-      UPDATE_KEY_STATE(l, 6);
-      UPDATE_KEY_STATE(k, 7);
+    UPDATE_KEY_STATE(w, 0);
+    UPDATE_KEY_STATE(a, 1);
+    UPDATE_KEY_STATE(d, 2);
+    UPDATE_KEY_STATE(s, 3);
+    UPDATE_KEY_STATE(i, 4);
+    UPDATE_KEY_STATE(j, 5);
+    UPDATE_KEY_STATE(l, 6);
+    UPDATE_KEY_STATE(k, 7);
 
-      UPDATE_SWITCH_STATE(1, 12);
-      UPDATE_SWITCH_STATE(2, 13);
-      UPDATE_SWITCH_STATE(3, 14);
-      UPDATE_SWITCH_STATE(4, 15);
+    UPDATE_SWITCH_STATE(1, 12);
+    UPDATE_SWITCH_STATE(2, 13);
+    UPDATE_SWITCH_STATE(3, 14);
+    UPDATE_SWITCH_STATE(4, 15);
 
-      if (data.key & (1 << 1)) { // a
-        cmd0 = -WHEEL_SPEED_BUTTON; cmd1 = WHEEL_SPEED_BUTTON;
-        cmd2 = -WHEEL_SPEED_BUTTON; cmd3 = WHEEL_SPEED_BUTTON;
-        button_drive_active = true;
-      } else if (data.key & (1 << 2)) { // d
-        cmd0 = WHEEL_SPEED_BUTTON; cmd1 = -WHEEL_SPEED_BUTTON;
-        cmd2 = WHEEL_SPEED_BUTTON; cmd3 = -WHEEL_SPEED_BUTTON;
-        button_drive_active = true;
-      } else if (data.key & (1 << 3)) { // s
-        cmd0 = (data.key & (1 << 12)) ? WHEEL_SPEED_BUTTON : -WHEEL_SPEED_BUTTON;
-        cmd1 = (data.key & (1 << 13)) ? WHEEL_SPEED_BUTTON : -WHEEL_SPEED_BUTTON;
-        cmd2 = (data.key & (1 << 14)) ? WHEEL_SPEED_BUTTON : -WHEEL_SPEED_BUTTON;
-        cmd3 = (data.key & (1 << 15)) ? WHEEL_SPEED_BUTTON : -WHEEL_SPEED_BUTTON;
-        button_drive_active = true;
-      } else if (data.key & (1 << 4)) { // i
-        cmd0 = WHEEL_SPEED_BUTTON; cmd1 = WHEEL_SPEED_BUTTON;
-        cmd2 = WHEEL_SPEED_BUTTON; cmd3 = WHEEL_SPEED_BUTTON;
-        button_drive_active = true;
-      } else if (data.key & (1 << 7)) { // k
-        cmd0 = -WHEEL_SPEED_BUTTON; cmd1 = -WHEEL_SPEED_BUTTON;
-        cmd2 = -WHEEL_SPEED_BUTTON; cmd3 = -WHEEL_SPEED_BUTTON;
-        button_drive_active = true;
-      } else if (data.key & (1 << 5)) { // j
-        cmd0 = -WHEEL_SPEED_BUTTON; cmd1 = WHEEL_SPEED_BUTTON;
-        cmd2 = WHEEL_SPEED_BUTTON; cmd3 = -WHEEL_SPEED_BUTTON;
-        button_drive_active = true;
-      } else if (data.key & (1 << 6)) { // l
-        cmd0 = WHEEL_SPEED_BUTTON; cmd1 = -WHEEL_SPEED_BUTTON;
-        cmd2 = -WHEEL_SPEED_BUTTON; cmd3 = WHEEL_SPEED_BUTTON;
-        button_drive_active = true;
-      }
+    if (data.key & (1 << 1)) { // a
+      cmd0 = -drive_limit; cmd1 = drive_limit;
+      cmd2 = -drive_limit; cmd3 = drive_limit;
+      button_drive_active = true;
+    } else if (data.key & (1 << 2)) { // d
+      cmd0 = drive_limit; cmd1 = -drive_limit;
+      cmd2 = drive_limit; cmd3 = -drive_limit;
+      button_drive_active = true;
+    } else if (data.key & (1 << 3)) { // s
+      cmd0 = (data.key & (1 << 12)) ? drive_limit : -drive_limit;
+      cmd1 = (data.key & (1 << 13)) ? drive_limit : -drive_limit;
+      cmd2 = (data.key & (1 << 14)) ? drive_limit : -drive_limit;
+      cmd3 = (data.key & (1 << 15)) ? drive_limit : -drive_limit;
+      button_drive_active = true;
+    } else if (data.key & (1 << 4)) { // i
+      cmd0 = drive_limit; cmd1 = drive_limit;
+      cmd2 = drive_limit; cmd3 = drive_limit;
+      button_drive_active = true;
+    } else if (data.key & (1 << 7)) { // k
+      cmd0 = -drive_limit; cmd1 = -drive_limit;
+      cmd2 = -drive_limit; cmd3 = -drive_limit;
+      button_drive_active = true;
+    } else if (data.key & (1 << 5)) { // j
+      cmd0 = -drive_limit; cmd1 = drive_limit;
+      cmd2 = drive_limit; cmd3 = -drive_limit;
+      button_drive_active = true;
+    } else if (data.key & (1 << 6)) { // l
+      cmd0 = drive_limit; cmd1 = -drive_limit;
+      cmd2 = -drive_limit; cmd3 = drive_limit;
+      button_drive_active = true;
+    }
 
-      obj = lv_obj_find_by_name(screen, CO_NAME(j1)); // joystick
+    obj = lv_obj_find_by_name(screen, CO_NAME(j1)); // joystick
+    if (obj) {
+      obj = lv_obj_find_by_name(obj, "stick"); // stick
       if (obj) {
-        obj = lv_obj_find_by_name(obj, "stick"); // stick
-        if (obj) {
-          if (data.key & (1 << 10)) {
-            lv_obj_add_state(obj, LV_STATE_PRESSED);
-          } else {
-            lv_obj_remove_state(obj, LV_STATE_PRESSED);
-          }
+        if (data.key & (1 << 10)) {
+          lv_obj_add_state(obj, LV_STATE_PRESSED);
+        } else {
+          lv_obj_remove_state(obj, LV_STATE_PRESSED);
         }
       }
+    }
 
-      obj = lv_obj_find_by_name(screen, CO_NAME(j2)); // joystick
+    obj = lv_obj_find_by_name(screen, CO_NAME(j2)); // joystick
+    if (obj) {
+      obj = lv_obj_find_by_name(obj, "stick"); // stick
       if (obj) {
-        obj = lv_obj_find_by_name(obj, "stick"); // stick
-        if (obj) {
-          if (data.key & (1 << 11)) {
-            lv_obj_add_state(obj, LV_STATE_PRESSED);
-          } else {
-            lv_obj_remove_state(obj, LV_STATE_PRESSED);
-          }
+        if (data.key & (1 << 11)) {
+          lv_obj_add_state(obj, LV_STATE_PRESSED);
+        } else {
+          lv_obj_remove_state(obj, LV_STATE_PRESSED);
         }
       }
+    }
 
-      obj = lv_obj_find_by_name(screen, CO_NAME(z)); // arc
+    obj = lv_obj_find_by_name(screen, CO_NAME(z)); // arc
+    if (obj) {
+      obj = lv_obj_get_child_by_type(obj, 0, &lv_label_class); // label
       if (obj) {
-        obj = lv_obj_get_child_by_type(obj, 0, &lv_label_class); // label
-        if (obj) {
-          if (data.key & (1 << 8)) {
-            lv_obj_set_style_text_color(obj, lv_color_make(200, 0, 0), 0);
-          } else {
-            lv_obj_set_style_text_color(obj, lv_color_white(), 0);
-          }
+        if (data.key & (1 << 8)) {
+          lv_obj_set_style_text_color(obj, lv_color_make(200, 0, 0), 0);
+        } else {
+          lv_obj_set_style_text_color(obj, lv_color_white(), 0);
         }
       }
+    }
 
-      obj = lv_obj_find_by_name(screen, CO_NAME(x)); // arc
+    obj = lv_obj_find_by_name(screen, CO_NAME(x)); // arc
+    if (obj) {
+      obj = lv_obj_get_child_by_type(obj, 0, &lv_label_class); // label
       if (obj) {
-        obj = lv_obj_get_child_by_type(obj, 0, &lv_label_class); // label
-        if (obj) {
-          if (data.key & (1 << 9)) {
-            lv_obj_set_style_text_color(obj, lv_color_make(200, 0, 0), 0);
-          } else {
-            lv_obj_set_style_text_color(obj, lv_color_white(), 0);
-          }
+        if (data.key & (1 << 9)) {
+          lv_obj_set_style_text_color(obj, lv_color_make(200, 0, 0), 0);
+        } else {
+          lv_obj_set_style_text_color(obj, lv_color_white(), 0);
         }
       }
     }
@@ -665,7 +679,7 @@ static void timer_cb(lv_timer_t *timer)
       obj = lv_obj_find_by_name(screen, CO_NAME(x));
       if (obj) {
         int32_t value = lv_arc_get_value(obj) + data.enc_diff;
-        value = value < 0 ? 0 : value > 360 ? 360 : value;
+        value = value < 0 ? 0 : value > 100 ? 100 : value;
         lv_arc_set_value(obj, value);
         lv_obj_send_event(obj, LV_EVENT_VALUE_CHANGED, NULL);
       }
@@ -694,10 +708,16 @@ static void timer_cb(lv_timer_t *timer)
     int32_t move_x = joy2_valid ? joy2_data.point.x : 0;
     int32_t move_y = joy2_valid ? joy2_data.point.y : 0;
     int32_t rot_axis = joy1_valid ? joy1_data.point.x : 0;
-    drive_cmd_from_joysticks(move_x, move_y, rot_axis, &cmd0, &cmd1, &cmd2, &cmd3);
+    drive_cmd_from_joysticks(move_x, move_y, rot_axis, drive_limit, &cmd0, &cmd1, &cmd2, &cmd3);
   }
 
   hal_nrf24_send_cmd(cmd0, cmd1, cmd2, cmd3);
+
+  obj = lv_obj_find_by_name(screen, CO_NAME(motor_cmd));
+  if (obj) {
+    lv_label_set_text_fmt(obj, "LF%+04d RF%+04d LR%+04d RR%+04d",
+                          (int)cmd0, (int)cmd1, (int)cmd2, (int)cmd3);
+  }
 
   if (indev_battery) {
     lv_indev_get_read_cb(indev_battery)(indev_battery, &data);
@@ -844,6 +864,7 @@ lv_obj_t *dev_check(void)
   lv_obj_set_name(arc2, CO_NAME(x));
   lv_obj_set_size(arc1, ARC_WIDTH, ARC_HEIGHT);
   lv_obj_set_size(arc2, ARC_WIDTH, ARC_HEIGHT);
+  lv_arc_set_range(arc2, 0, 100);
   lv_arc_set_rotation(arc1, 270);
   lv_arc_set_rotation(arc2, 270);
   lv_arc_set_bg_angles(arc1, 0, 360);
@@ -868,7 +889,7 @@ lv_obj_t *dev_check(void)
   lv_obj_add_event_cb(arc1, value_changed_event_cb, LV_EVENT_VALUE_CHANGED, label1);
   lv_obj_add_event_cb(arc2, value_changed_event_cb, LV_EVENT_VALUE_CHANGED, label2);
   lv_arc_set_value(arc1, 50);
-  lv_arc_set_value(arc2, 50);
+  lv_arc_set_value(arc2, DRIVE_LIMIT_DEFAULT_PCT);
   lv_obj_send_event(arc1, LV_EVENT_VALUE_CHANGED, NULL);
   lv_obj_send_event(arc2, LV_EVENT_VALUE_CHANGED, NULL);
 
@@ -958,15 +979,16 @@ lv_obj_t *dev_check(void)
   lv_obj_set_style_text_opa(bat_voltage, LV_OPA_70, LV_PART_MAIN);
   lv_obj_align(bat_voltage, LV_ALIGN_BOTTOM_MID, 0, -4);
 
-  lv_obj_t *hint = lv_label_create(screen);
-  lv_label_set_text(hint, "Key + Joystick telemetry");
-  lv_obj_set_width(hint, LCD_WIDTH - 20);
-  lv_label_set_long_mode(hint, LV_LABEL_LONG_CLIP);
-  lv_obj_set_style_text_align(hint, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN);
-  lv_obj_set_style_text_color(hint, lv_color_hex(0x83C7E4), LV_PART_MAIN);
-  lv_obj_set_style_text_font(hint, &lv_font_montserrat_10, LV_PART_MAIN);
-  lv_obj_set_style_text_opa(hint, LV_OPA_60, LV_PART_MAIN);
-  lv_obj_align(hint, LV_ALIGN_BOTTOM_MID, 0, -18);
+  lv_obj_t *motor_cmd = lv_label_create(screen);
+  lv_obj_set_name(motor_cmd, CO_NAME(motor_cmd));
+  lv_label_set_text(motor_cmd, "LF+000 RF+000 LR+000 RR+000");
+  lv_obj_set_width(motor_cmd, LCD_WIDTH - 16);
+  lv_label_set_long_mode(motor_cmd, LV_LABEL_LONG_CLIP);
+  lv_obj_set_style_text_align(motor_cmd, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN);
+  lv_obj_set_style_text_color(motor_cmd, lv_color_hex(0x83C7E4), LV_PART_MAIN);
+  lv_obj_set_style_text_font(motor_cmd, &lv_font_montserrat_10, LV_PART_MAIN);
+  lv_obj_set_style_text_opa(motor_cmd, LV_OPA_80, LV_PART_MAIN);
+  lv_obj_align(motor_cmd, LV_ALIGN_BOTTOM_MID, 0, -18);
 
   lv_obj_t *top_hit = lv_button_create(screen);
   lv_obj_set_size(top_hit, LCD_WIDTH - SCREEN_PAD * 2, TOP_BAR_HEIGHT);
