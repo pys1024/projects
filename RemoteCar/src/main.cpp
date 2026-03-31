@@ -10,6 +10,8 @@ RF24 *radio = new RF24(NRF_CE_PIN, NRF_CSN_PIN, SPI_SPEED);
 const uint8_t address[] = "12345";
 int8_t cmd_code[4] = {0, 0, 0, 0};
 
+#define MOTOR_START_CMD 20
+
 bool hal_nrf24_init()
 {
   // initialize the transceiver on the SPI bus
@@ -85,20 +87,33 @@ void setup()
   // radio.printPrettyDetails(); // (larger) function that prints human readable data
 }
 
+static uint8_t cmd_to_duty_cycle(int8_t cmd)
+{
+  int16_t abs_cmd = abs((int16_t)cmd);
+  if (abs_cmd == 0) {
+    return 0;
+  }
+
+  return (uint8_t)map(abs_cmd, 1, 127,
+                      map(MOTOR_START_CMD, 0, 127, 0, 255), 255);
+}
+
 void write_cmd(int8_t cmd, uint8_t pin1, uint8_t pin2)
 {
-  cmd *= 10;
-  cmd = constrain(cmd, -255, 255);
+  uint8_t duty_cycle = cmd_to_duty_cycle(cmd);
 
+  // For motor driver with 2 control pins, we can only set one pin HIGH at a time to control the direction of the motor.
+  // If cmd is positive, set pin1 to HIGH and pin2 to LOW. If cmd is negative, set pin1 to LOW and pin2 to HIGH. If cmd is zero, set both pins to LOW.
+  // PWM is used to control the speed of the motor, so we can use analogWrite to set the duty cycle of the PWM signal on the pin that is HIGH. The other pin will be set to LOW.
   if (cmd > 0) {
-    digitalWrite(pin1, HIGH);
-    digitalWrite(pin2, LOW);
+    analogWrite(pin1, duty_cycle);
+    analogWrite(pin2, 0);
   } else if (cmd < 0) {
-    digitalWrite(pin1, LOW);
-    digitalWrite(pin2, HIGH);
+    analogWrite(pin1, 0);
+    analogWrite(pin2, duty_cycle);
   } else {
-    digitalWrite(pin1, LOW);
-    digitalWrite(pin2, LOW);
+    analogWrite(pin1, 0);
+    analogWrite(pin2, 0);
   }
 }
 
