@@ -30,17 +30,17 @@
  * SW1: P0.1
  * SW2: P0.2
  * SW3: P0.3
- * 
+ *
  * V1: P1.6
  * V2: P1.5
  * V3: P1.4
  * V4: P1.3
  * V5: P1.2
  * V6: P1.1
- * 
+ *
  * PUMP: P3.6
  * BEEP: P2.5
- * 
+ *
  */
 #define SW1 GPIO_2_ADDR(0, 1)
 #define SW2 GPIO_2_ADDR(0, 2)
@@ -69,10 +69,10 @@ uint64_t ota_progress_millis = 0;
 AsyncWebServer server(80);
 
 uint8_t tds_temp_flag = 0;
-uint16_t tds_ch1 = 0;
-uint16_t tds_ch2 = 0;
-uint16_t temp_ch1 = 0;
-uint16_t temp_ch2 = 0;
+float tds_ch1 = 0;
+float tds_ch2 = 0;
+float temp_ch1 = 0;
+float temp_ch2 = 0;
 uint8_t work_mode = WORK_MODE_SHUT;
 
 void task_pump();
@@ -286,21 +286,21 @@ void task_upload_info() {
       uint16_t temp = (TDS_RSP_BUF[6] << 8 | TDS_RSP_BUF[7]);
 
       if (ch == 1) {
-        tds_ch1 = tds;
-        temp_ch1 = temp;
+        tds_ch1 = tds/20.0;
+        temp_ch1 = temp/10.0;
       } else if (ch == 2) {
-        tds_ch2 = tds;
-        temp_ch2 = temp;
+        tds_ch2 = tds/20.0;
+        temp_ch2 = temp/10.0;
       }
 
       if (client.connected()) {
         JsonDocument doc;
-        doc[KEY_TDS1] = tds_ch1/20.0;
-        doc[KEY_TDS2] = tds_ch2/20.0;
-        doc[KEY_TEMP1] = temp_ch1/10.0;
-        doc[KEY_TEMP2] = temp_ch2/10.0;
+        doc[KEY_TDS1] = tds_ch1;
+        doc[KEY_TDS2] = tds_ch2;
+        doc[KEY_TEMP1] = temp_ch1;
+        doc[KEY_TEMP2] = temp_ch2;
         doc[KEY_RSSI] = WiFi.RSSI();
-  
+
         // Note: the following publish MUST use QoS 0, otherwise the client may be disconnected.
         client.publish(TOPIC_STATE, doc.as<String>(), true, 0);
       }
@@ -315,17 +315,17 @@ void task_pump() {
    * SW1: P0.1
    * SW2: P0.2
    * SW3: P0.3
-   * 
+   *
    * V1: P1.6
    * V2: P1.5
    * V3: P1.4
    * V4: P1.3
    * V5: P1.2
    * V6: P1.1
-   * 
+   *
    * PUMP: P3.6
    * BEEP: P2.5
-   * 
+   *
    */
   /* Water flow control */
   if (Wire.requestFrom(PORT_2_ADDR(0), 1)) {
@@ -384,7 +384,7 @@ void setup() {
   gpio_ex_set(SW1, 1);
   gpio_ex_set(SW2, 1);
   gpio_ex_set(SW3, 1);
-  
+
   connect(CLIENT_CONNECT_MAX_RETRY_TIMES);
 
   ticker1.start();
